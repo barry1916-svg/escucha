@@ -1,0 +1,4 @@
+flask
+edge-tts
+python-dotenv
+gunicorn

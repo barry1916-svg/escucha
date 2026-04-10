@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escucha — Spanish Listening Practice</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #F7F3EE;
+            color: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Header ── */
+        header {
+            background: #C60B1E;
+            color: white;
+            padding: 28px 20px 22px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        header .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.88;
+        }
+
+        /* ── Progress ── */
+        #progress-track {
+            height: 4px;
+            background: #e5e7eb;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: #C60B1E;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        /* ── Stats bar ── */
+        #stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 540px;
+            margin: 20px auto 0;
+            padding: 0 16px;
+            font-size: 0.88rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        #score-display { color: #C60B1E; }
+
+        /* ── Main ── */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 16px 48px;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 540px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        /* ── Loading ── */
+        #loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid #fcd5d8;
+            border-top-color: #C60B1E;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Question state ── */
+        #question-state { display: none; }
+
+        .audio-section {
+            background: linear-gradient(135deg, #C60B1E 0%, #9b0918 100%);
+            padding: 36px 20px 30px;
+            text-align: center;
+        }
+
+        #play-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.18);
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+        }
+
+        #play-btn:hover { background: rgba(255,255,255,0.28); }
+        #play-btn:active { transform: scale(0.95); }
+        #play-btn.loading { cursor: default; }
+        #play-btn.loading .btn-spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        #play-hint {
+            color: rgba(255,255,255,0.82);
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        #replay-count {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        .question-label {
+            padding: 18px 24px 6px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        /* ── Choices ── */
+        #choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 10px 20px 24px;
+        }
+
+        .choice-btn {
+            background: #F3F4F6;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 14px 10px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, transform 0.1s;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .choice-btn:hover:not(:disabled) {
+            background: #fce8ea;
+            border-color: #C60B1E;
+            color: #C60B1E;
+        }
+
+        .choice-btn:active:not(:disabled) { transform: scale(0.97); }
+
+        .choice-btn:disabled { cursor: default; }
+        .choice-btn.correct  { background: #dcfce7; border-color: #16a34a; color: #15803d; }
+        .choice-btn.wrong    { background: #fee2e2; border-color: #dc2626; color: #b91c1c; }
+
+        /* ── Feedback ── */
+        #feedback-state { display: none; }
+
+        .feedback-banner {
+            padding: 16px 24px;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feedback-banner.correct { background: #dcfce7; color: #15803d; }
+        .feedback-banner.wrong   { background: #fee2e2; color: #b91c1c; }
+
+        .feedback-banner .icon { font-size: 1.4rem; }
+
+        .feedback-body { padding: 18px 24px 24px; }
+
+        .sentence-display {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #222;
+            margin-bottom: 8px;
+        }
+
+        .sentence-display strong {
+            color: #C60B1E;
+            font-weight: 800;
+        }
+
+        .translation {
+            font-size: 0.88rem;
+            color: #777;
+            font-style: italic;
+            margin-bottom: 14px;
+        }
+
+        .explanation {
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.55;
+            background: #F7F3EE;
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+
+        #next-btn {
+            display: block;
+            width: calc(100% - 48px);
+            margin: 0 24px 24px;
+            padding: 14px;
+            background: #C60B1E;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        #next-btn:hover { opacity: 0.88; }
+
+        /* ── Complete state ── */
+        #complete-state {
+            display: none;
+            text-align: center;
+            padding: 48px 32px;
+        }
+
+        #complete-state .result-emoji { font-size: 4rem; margin-bottom: 16px; }
+
+        #complete-state h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        #final-score {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #C60B1E;
+            margin: 12px 0 6px;
+        }
+
+        #final-label {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 32px;
+        }
+
+        #play-again-btn {
+            background: #C60B1E;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 16px 48px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        #play-again-btn:hover { opacity: 0.88; }
+
+        /* ── Error ── */
+        #error-state {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 400px) {
+            #choices { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🇪🇸 Escucha</h1>
+    <p class="subtitle">Spanish Verb Listening Practice</p>
+</header>
+
+<div id="progress-track"><div id="progress-fill"></div></div>
+
+<div id="stats-bar">
+    <span id="q-counter">Question 1 of 10</span>
+    <span id="score-display">Score: 0 / 0</span>
+</div>
+
+<main>
+    <!-- Loading -->
+    <div id="loading-state">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Error -->
+    <div id="error-state">
+        <p>Something went wrong. <a href="/" style="color:#C60B1E">Reload</a></p>
+    </div>
+
+    <!-- Question -->
+    <div class="card" id="question-state">
+        <div class="audio-section">
+            <button id="play-btn" onclick="playAudio()" title="Play audio">
+                <span id="play-icon">▶</span>
+            </button>
+            <p id="play-hint">Tap to listen</p>
+            <p id="replay-count"></p>
+        </div>
+        <p class="question-label">What tense is the verb?</p>
+        <div id="choices"></div>
+    </div>
+
+    <!-- Feedback (appended below question card after answer) -->
+    <div class="card" id="feedback-state">
+        <div id="feedback-banner" class="feedback-banner">
+            <span class="icon" id="feedback-icon"></span>
+            <span id="feedback-title"></span>
+        </div>
+        <div class="feedback-body">
+            <p class="sentence-display" id="sentence-display"></p>
+            <p class="translation" id="translation-display"></p>
+            <p class="explanation" id="explanation-display"></p>
+        </div>
+        <button id="next-btn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+
+    <!-- Complete -->
+    <div class="card" id="complete-state">
+        <div class="result-emoji" id="result-emoji"></div>
+        <h2>Round complete!</h2>
+        <div id="final-score"></div>
+        <div id="final-label"></div>
+        <button id="play-again-btn" onclick="startRound()">Play Again</button>
+    </div>
+</main>
+
+<audio id="audio-player" preload="auto"></audio>
+
+<script>
+    const QUESTIONS_PER_ROUND = 10;
+
+    let score = 0;
+    let answered = 0;
+    let questionNum = 0;   // 0-indexed
+    let seenIds = [];
+    let currentId = null;
+    let currentChoices = [];
+    let playCount = 0;
+    let audioReady = false;
+
+    const audio = document.getElementById("audio-player");
+
+    audio.addEventListener("canplaythrough", () => {
+        audioReady = true;
+        setPlayBtnReady();
+    });
+
+    audio.addEventListener("error", () => {
+        document.getElementById("play-hint").textContent = "Audio unavailable";
+    });
+
+    // ── State helpers ───────────────────────────────────────────────────────
+
+    function showOnly(...ids) {
+        ["loading-state", "error-state", "question-state", "feedback-state", "complete-state"]
+            .forEach(id => {
+                const el = document.getElementById(id);
+                el.style.display = ids.includes(id) ? (id === "question-state" || id === "feedback-state" ? "block" : "flex") : "none";
+            });
+    }
+
+    function updateStats() {
+        document.getElementById("q-counter").textContent =
+            `Question ${Math.min(questionNum + 1, QUESTIONS_PER_ROUND)} of ${QUESTIONS_PER_ROUND}`;
+        document.getElementById("score-display").textContent =
+            `Score: ${score} / ${answered}`;
+        const pct = (questionNum / QUESTIONS_PER_ROUND) * 100;
+        document.getElementById("progress-fill").style.width = pct + "%";
+    }
+
+    // ── Audio ───────────────────────────────────────────────────────────────
+
+    function preloadAudio(id) {
+        audioReady = false;
+        setPlayBtnLoading();
+        audio.src = `/api/audio/${id}`;
+        audio.load();
+    }
+
+    function setPlayBtnLoading() {
+        const btn = document.getElementById("play-btn");
+        btn.classList.add("loading");
+        document.getElementById("play-icon").innerHTML =
+            `<div class="btn-spinner"></div>`;
+        document.getElementById("play-hint").textContent = "Loading…";
+    }
+
+    function setPlayBtnReady() {
+        const btn = document.getElementById("play-btn");
+        btn.classList.remove("loading");
+        document.getElementById("play-icon").textContent = "▶";
+        document.getElementById("play-hint").textContent =
+            playCount === 0 ? "Tap to listen" : "Tap to replay";
+    }
+
+    function playAudio() {
+        if (!audioReady) return;
+        audio.currentTime = 0;
+        audio.play();
+        playCount++;
+        document.getElementById("play-hint").textContent = "Tap to replay";
+        if (playCount > 1) {
+            document.getElementById("replay-count").textContent =
+                `Played ${playCount}×`;
+        }
+    }
+
+    // ── Question flow ───────────────────────────────────────────────────────
+
+    async function loadQuestion() {
+        showOnly("loading-state");
+        updateStats();
+
+        try {
+            const exclude = seenIds.join(",");
+            const res = await fetch(`/api/question?exclude=${exclude}`);
+            if (!res.ok) throw new Error("fetch failed");
+            const data = await res.json();
+
+            currentId = data.id;
+            currentChoices = data.choices;
+            seenIds.push(currentId);
+            playCount = 0;
+
+            renderChoices();
+            document.getElementById("replay-count").textContent = "";
+            preloadAudio(currentId);
+
+            showOnly("question-state");
+
+        } catch (e) {
+            showOnly("error-state");
+        }
+    }
+
+    function renderChoices() {
+        const container = document.getElementById("choices");
+        container.innerHTML = currentChoices.map(t =>
+            `<button class="choice-btn" onclick="handleChoice(this, '${t.replace(/'/g, "\\'")}')">
+                ${t}
+            </button>`
+        ).join("");
+    }
+
+    async function handleChoice(btn, tense) {
+        // Disable all buttons
+        document.querySelectorAll(".choice-btn").forEach(b => b.disabled = true);
+
+        try {
+            const res = await fetch("/api/check", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: currentId, answer: tense }),
+            });
+            const data = await res.json();
+
+            answered++;
+            if (data.correct) score++;
+            updateStats();
+
+            // Colour buttons
+            document.querySelectorAll(".choice-btn").forEach(b => {
+                if (b.textContent.trim() === data.correct_answer) b.classList.add("correct");
+                else if (b === btn && !data.correct) b.classList.add("wrong");
+            });
+
+            // Build feedback
+            document.getElementById("feedback-banner").className =
+                "feedback-banner " + (data.correct ? "correct" : "wrong");
+            document.getElementById("feedback-icon").textContent =
+                data.correct ? "✓" : "✗";
+            document.getElementById("feedback-title").textContent =
+                data.correct ? "Correct!" : `Incorrect — ${data.correct_answer}`;
+
+            // Highlight verb form in sentence
+            const escaped = data.verb_form.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const highlighted = data.spanish.replace(
+                new RegExp(`(^|\\s)(${escaped})([\\s,.!?]|$)`, "i"),
+                (_, pre, match, post) => `${pre}<strong>${match}</strong>${post}`
+            );
+            document.getElementById("sentence-display").innerHTML = highlighted;
+            document.getElementById("translation-display").textContent = data.english;
+            document.getElementById("explanation-display").textContent = data.explanation;
+
+            showOnly("question-state", "feedback-state");
+
+            // Update next button label
+            document.getElementById("next-btn").textContent =
+                questionNum + 1 >= QUESTIONS_PER_ROUND ? "See Results" : "Next Question →";
+
+        } catch (e) {
+            showOnly("error-state");
+        }
+    }
+
+    function nextQuestion() {
+        questionNum++;
+        if (questionNum >= QUESTIONS_PER_ROUND) {
+            showComplete();
+        } else {
+            loadQuestion();
+        }
+    }
+
+    // ── Round complete ──────────────────────────────────────────────────────
+
+    function showComplete() {
+        document.getElementById("progress-fill").style.width = "100%";
+
+        const pct = score / QUESTIONS_PER_ROUND;
+        let emoji, label;
+        if (pct === 1)        { emoji = "🏆"; label = "Perfect score — ¡Impresionante!"; }
+        else if (pct >= 0.8)  { emoji = "🌟"; label = "Excellent work — ¡Muy bien!"; }
+        else if (pct >= 0.6)  { emoji = "👍"; label = "Good effort — ¡Bien hecho!"; }
+        else if (pct >= 0.4)  { emoji = "📚"; label = "Keep practising — ¡Sigue así!"; }
+        else                  { emoji = "💪"; label = "Don't give up — ¡Tú puedes!"; }
+
+        document.getElementById("result-emoji").textContent = emoji;
+        document.getElementById("final-score").textContent = `${score} / ${QUESTIONS_PER_ROUND}`;
+        document.getElementById("final-label").textContent = label;
+
+        document.getElementById("complete-state").style.display = "block";
+        showOnly("complete-state");
+    }
+
+    // ── Start ───────────────────────────────────────────────────────────────
+
+    function startRound() {
+        score = 0;
+        answered = 0;
+        questionNum = 0;
+        seenIds = [];
+        loadQuestion();
+    }
+
+    startRound();
+</script>
+</body>
+</html>
