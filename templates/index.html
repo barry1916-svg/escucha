@@ -358,7 +358,7 @@
             <p id="play-hint">Tap to listen</p>
             <p id="replay-count"></p>
         </div>
-        <p class="question-label">What tense is <em id="verb-form-label"></em>?</p>
+        <p class="question-label">What tense is the <em id="verb-form-label"></em>?</p>
         <div id="choices"></div>
     </div>
 
@@ -481,7 +481,7 @@
 
             currentId = data.id;
             currentChoices = data.choices;
-            document.getElementById("verb-form-label").textContent = "\u201c" + data.verb_form + "\u201d";
+            document.getElementById("verb-form-label").textContent = data.verb_label;
             seenIds.push(currentId);
             playCount = 0;
 

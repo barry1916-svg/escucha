@@ -5,6 +5,7 @@ import asyncio
 import io
 import os
 import random
+import re
 import sys
 
 import edge_tts
@@ -20,6 +21,21 @@ app = Flask(__name__)
 
 VOICE = "es-ES-AlvaroNeural"
 _audio_cache: dict = {}
+
+ORDINALS = ["first", "second", "third", "fourth", "fifth",
+            "sixth", "seventh", "eighth", "ninth", "tenth"]
+
+
+def verb_position_label(spanish: str, verb_form: str) -> str:
+    """Return ordinal word-position label for the target verb, e.g. 'third word'."""
+    words = re.sub(r"[¿?¡!,.:;«»\"'()]", "", spanish).lower().split()
+    target = verb_form.lower().split()[0]  # first token for compound forms
+    try:
+        idx = words.index(target)
+        ordinal = ORDINALS[idx] if idx < len(ORDINALS) else f"{idx + 1}th"
+        return f"{ordinal} word"
+    except ValueError:
+        return "the verb"
 
 
 async def _tts_bytes(text: str) -> bytes:
@@ -47,7 +63,8 @@ def question():
     choices = wrong + [sentence["tense"]]
     random.shuffle(choices)
 
-    return jsonify({"id": sentence["id"], "choices": choices, "verb_form": sentence["verb_form"]})
+    verb_label = verb_position_label(sentence["spanish"], sentence["verb_form"])
+    return jsonify({"id": sentence["id"], "choices": choices, "verb_label": verb_label})
 
 
 @app.route("/api/audio/<int:sentence_id>")
