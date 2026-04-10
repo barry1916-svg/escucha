@@ -47,7 +47,7 @@ def question():
     choices = wrong + [sentence["tense"]]
     random.shuffle(choices)
 
-    return jsonify({"id": sentence["id"], "choices": choices})
+    return jsonify({"id": sentence["id"], "choices": choices, "verb_form": sentence["verb_form"]})
 
 
 @app.route("/api/audio/<int:sentence_id>")

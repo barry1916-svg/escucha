@@ -157,11 +157,16 @@
 
         .question-label {
             padding: 18px 24px 6px;
-            font-size: 0.82rem;
+            font-size: 0.88rem;
             font-weight: 700;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
+            color: #555;
+            letter-spacing: 0.2px;
+        }
+
+        .question-label em {
+            font-style: normal;
+            color: #C60B1E;
+            font-weight: 800;
         }
 
         /* ── Choices ── */
@@ -353,7 +358,7 @@
             <p id="play-hint">Tap to listen</p>
             <p id="replay-count"></p>
         </div>
-        <p class="question-label">What tense is the verb?</p>
+        <p class="question-label">What tense is <em id="verb-form-label"></em>?</p>
         <div id="choices"></div>
     </div>
 
@@ -476,6 +481,7 @@
 
             currentId = data.id;
             currentChoices = data.choices;
+            document.getElementById("verb-form-label").textContent = "\u201c" + data.verb_form + "\u201d";
             seenIds.push(currentId);
             playCount = 0;
 
