@@ -16,6 +16,7 @@ load_dotenv()
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from sentences import SENTENCES, TENSES
+from phrases import PHRASES
 
 app = Flask(__name__)
 
@@ -81,6 +82,41 @@ def audio(sentence_id):
 
     resp = send_file(
         io.BytesIO(_audio_cache[sentence_id]),
+        mimetype="audio/mpeg",
+        as_attachment=False,
+    )
+    resp.headers["Cache-Control"] = "public, max-age=86400"
+    return resp
+
+
+@app.route("/api/phrase")
+def phrase():
+    exclude_param = request.args.get("exclude", "")
+    exclude_ids = {int(x) for x in exclude_param.split(",") if x.strip().isdigit()}
+    pool = [p for p in PHRASES if p["id"] not in exclude_ids] or PHRASES[:]
+    p = random.choice(pool)
+    return jsonify({
+        "id": p["id"],
+        "sentence_es": p["sentence_es"],
+        "sentence_en": p["sentence_en"],
+        "phrase_es": p["phrase_es"],
+        "phrase_en": p["phrase_en"],
+    })
+
+
+@app.route("/api/audio/phrase/<int:phrase_id>")
+def phrase_audio(phrase_id):
+    p = next((x for x in PHRASES if x["id"] == phrase_id), None)
+    if not p:
+        return "Not found", 404
+    cache_key = f"phrase_{phrase_id}"
+    if cache_key not in _audio_cache:
+        try:
+            _audio_cache[cache_key] = asyncio.run(_tts_bytes(p["sentence_es"]))
+        except Exception as exc:
+            return f"TTS error: {exc}", 503
+    resp = send_file(
+        io.BytesIO(_audio_cache[cache_key]),
         mimetype="audio/mpeg",
         as_attachment=False,
     )

@@ -37,10 +37,32 @@
             opacity: 0.88;
         }
 
+        /* ── Back button ── */
+        #back-btn {
+            position: absolute;
+            top: 20px;
+            left: 16px;
+            background: rgba(255,255,255,0.18);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            cursor: pointer;
+            display: none;
+            transition: background 0.15s;
+        }
+
+        #back-btn:hover { background: rgba(255,255,255,0.3); }
+
+        header { position: relative; }
+
         /* ── Progress ── */
         #progress-track {
             height: 4px;
             background: #e5e7eb;
+            display: none;
         }
 
         #progress-fill {
@@ -52,7 +74,7 @@
 
         /* ── Stats bar ── */
         #stats-bar {
-            display: flex;
+            display: none;
             justify-content: space-between;
             align-items: center;
             max-width: 540px;
@@ -105,7 +127,79 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── Question state ── */
+        /* ── Home screen ── */
+        #home-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 16px 48px;
+            width: 100%;
+        }
+
+        .home-intro {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .home-intro h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .home-intro p {
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+            max-width: 540px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 20px;
+            padding: 28px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.15s, transform 0.1s, box-shadow 0.15s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .mode-btn:hover {
+            border-color: #C60B1E;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(198,11,30,0.15);
+        }
+
+        .mode-btn:active { transform: scale(0.97); }
+
+        .mode-btn .mode-icon {
+            font-size: 2.6rem;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .mode-btn .mode-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .mode-btn .mode-desc {
+            font-size: 0.78rem;
+            color: #888;
+            line-height: 1.4;
+        }
+
+        /* ── Verb quiz states ── */
         #question-state { display: none; }
 
         .audio-section {
@@ -305,9 +399,138 @@
             font-weight: 700;
             cursor: pointer;
             transition: opacity 0.15s;
+            margin-bottom: 12px;
         }
 
         #play-again-btn:hover { opacity: 0.88; }
+
+        /* ── Phrases mode ── */
+        #phrase-state { display: none; }
+
+        .phrase-audio-section {
+            background: linear-gradient(135deg, #1a6e3d 0%, #145530 100%);
+            padding: 36px 20px 30px;
+            text-align: center;
+        }
+
+        #phrase-play-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.18);
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+        }
+
+        #phrase-play-btn:hover { background: rgba(255,255,255,0.28); }
+        #phrase-play-btn:active { transform: scale(0.95); }
+        #phrase-play-btn.loading { cursor: default; }
+        #phrase-play-btn.loading .btn-spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        #phrase-play-hint {
+            color: rgba(255,255,255,0.82);
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        #phrase-replay-count {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        .phrase-card-body {
+            padding: 20px 24px 24px;
+        }
+
+        #reveal-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: #1a6e3d;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s;
+            margin-bottom: 0;
+        }
+
+        #reveal-btn:hover { opacity: 0.88; }
+
+        #phrase-revealed { display: none; }
+
+        .phrase-main {
+            margin-bottom: 16px;
+        }
+
+        .phrase-es {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1a6e3d;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .phrase-en {
+            font-size: 1rem;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .phrase-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 16px 0;
+        }
+
+        .phrase-sentence-es {
+            font-size: 0.95rem;
+            color: #222;
+            line-height: 1.6;
+            margin-bottom: 6px;
+            font-style: italic;
+        }
+
+        .phrase-sentence-en {
+            font-size: 0.85rem;
+            color: #888;
+            line-height: 1.55;
+        }
+
+        #next-phrase-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: #1a6e3d;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s;
+            margin-top: 16px;
+        }
+
+        #next-phrase-btn:hover { opacity: 0.88; }
 
         /* ── Error ── */
         #error-state {
@@ -321,14 +544,16 @@
         @media (max-width: 400px) {
             #choices { grid-template-columns: 1fr; }
             header h1 { font-size: 1.8rem; }
+            .mode-buttons { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
 <header>
+    <button id="back-btn" onclick="goHome()">← Home</button>
     <h1>🇪🇸 Escucha</h1>
-    <p class="subtitle">Spanish Verb Listening Practice</p>
+    <p class="subtitle" id="header-subtitle">Spanish Listening Practice</p>
 </header>
 
 <div id="progress-track"><div id="progress-fill"></div></div>
@@ -349,7 +574,27 @@
         <p>Something went wrong. <a href="/" style="color:#C60B1E">Reload</a></p>
     </div>
 
-    <!-- Question -->
+    <!-- Home -->
+    <div id="home-state">
+        <div class="home-intro">
+            <h2>What would you like to practise?</h2>
+            <p>Choose an exercise to get started</p>
+        </div>
+        <div class="mode-buttons">
+            <button class="mode-btn" onclick="startVerbMode()">
+                <div class="mode-icon">🎧</div>
+                <div class="mode-title">Verb Practice</div>
+                <div class="mode-desc">Listen and identify Spanish verb tenses</div>
+            </button>
+            <button class="mode-btn" onclick="startPhraseMode()">
+                <div class="mode-icon">💬</div>
+                <div class="mode-title">Common Phrases</div>
+                <div class="mode-desc">Learn everyday Spanish expressions</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Verb: Question -->
     <div class="card" id="question-state">
         <div class="audio-section">
             <button id="play-btn" onclick="playAudio()" title="Play audio">
@@ -362,7 +607,7 @@
         <div id="choices"></div>
     </div>
 
-    <!-- Feedback (appended below question card after answer) -->
+    <!-- Verb: Feedback -->
     <div class="card" id="feedback-state">
         <div id="feedback-banner" class="feedback-banner">
             <span class="icon" id="feedback-icon"></span>
@@ -376,7 +621,7 @@
         <button id="next-btn" onclick="nextQuestion()">Next Question →</button>
     </div>
 
-    <!-- Complete -->
+    <!-- Verb: Complete -->
     <div class="card" id="complete-state">
         <div class="result-emoji" id="result-emoji"></div>
         <h2>Round complete!</h2>
@@ -384,41 +629,122 @@
         <div id="final-label"></div>
         <button id="play-again-btn" onclick="startRound()">Play Again</button>
     </div>
+
+    <!-- Phrases -->
+    <div class="card" id="phrase-state">
+        <div class="phrase-audio-section">
+            <button id="phrase-play-btn" onclick="phrasePlayAudio()" title="Play audio">
+                <span id="phrase-play-icon">▶</span>
+            </button>
+            <p id="phrase-play-hint">Tap to listen</p>
+            <p id="phrase-replay-count"></p>
+        </div>
+        <div class="phrase-card-body">
+            <div id="phrase-revealed">
+                <div class="phrase-main">
+                    <div class="phrase-es" id="phrase-es"></div>
+                    <div class="phrase-en" id="phrase-en"></div>
+                </div>
+                <div class="phrase-divider"></div>
+                <div class="phrase-sentence-es" id="phrase-sentence-es"></div>
+                <div class="phrase-sentence-en" id="phrase-sentence-en"></div>
+            </div>
+            <button id="reveal-btn" onclick="revealPhrase()">Reveal phrase →</button>
+            <button id="next-phrase-btn" onclick="loadPhrase()" style="display:none">Next Phrase →</button>
+        </div>
+    </div>
 </main>
 
 <audio id="audio-player" preload="auto"></audio>
+<audio id="phrase-audio-player" preload="auto"></audio>
 
 <script>
     const QUESTIONS_PER_ROUND = 10;
 
+    // ── State ────────────────────────────────────────────────────────────────
+    let mode = "home"; // "home" | "verb" | "phrase"
+
+    // Verb state
     let score = 0;
     let answered = 0;
-    let questionNum = 0;   // 0-indexed
+    let questionNum = 0;
     let seenIds = [];
     let currentId = null;
     let currentChoices = [];
     let playCount = 0;
     let audioReady = false;
 
+    // Phrase state
+    let phraseSeenIds = [];
+    let currentPhraseId = null;
+    let phrasePlayCount = 0;
+    let phraseAudioReady = false;
+
     const audio = document.getElementById("audio-player");
+    const phraseAudio = document.getElementById("phrase-audio-player");
 
     audio.addEventListener("canplaythrough", () => {
         audioReady = true;
         setPlayBtnReady();
+        audio.play();
     });
-
     audio.addEventListener("error", () => {
         document.getElementById("play-hint").textContent = "Audio unavailable";
     });
 
-    // ── State helpers ───────────────────────────────────────────────────────
+    phraseAudio.addEventListener("canplaythrough", () => {
+        phraseAudioReady = true;
+        setPhrasePlayBtnReady();
+        phraseAudio.play();
+        phrasePlayCount++;
+    });
+    phraseAudio.addEventListener("error", () => {
+        document.getElementById("phrase-play-hint").textContent = "Audio unavailable";
+    });
+
+    // ── Screen management ────────────────────────────────────────────────────
+
+    const ALL_SCREENS = ["loading-state", "error-state", "home-state",
+                         "question-state", "feedback-state", "complete-state", "phrase-state"];
 
     function showOnly(...ids) {
-        ["loading-state", "error-state", "question-state", "feedback-state", "complete-state"]
-            .forEach(id => {
-                const el = document.getElementById(id);
-                el.style.display = ids.includes(id) ? (id === "question-state" || id === "feedback-state" ? "block" : "flex") : "none";
-            });
+        ALL_SCREENS.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (ids.includes(id)) {
+                if (id === "home-state") el.style.display = "flex";
+                else if (id === "loading-state") el.style.display = "flex";
+                else el.style.display = "block";
+            } else {
+                el.style.display = "none";
+            }
+        });
+    }
+
+    function setVerbChrome(visible) {
+        document.getElementById("progress-track").style.display = visible ? "block" : "none";
+        document.getElementById("stats-bar").style.display = visible ? "flex" : "none";
+        document.getElementById("back-btn").style.display = visible ? "inline-block" : "none";
+    }
+
+    function setPhraseChrome(visible) {
+        document.getElementById("back-btn").style.display = visible ? "inline-block" : "none";
+    }
+
+    function goHome() {
+        mode = "home";
+        setVerbChrome(false);
+        document.getElementById("header-subtitle").textContent = "Spanish Listening Practice";
+        showOnly("home-state");
+    }
+
+    // ── Verb mode ────────────────────────────────────────────────────────────
+
+    function startVerbMode() {
+        mode = "verb";
+        document.getElementById("header-subtitle").textContent = "Verb Tense Practice";
+        setVerbChrome(true);
+        startRound();
     }
 
     function updateStats() {
@@ -430,8 +756,6 @@
         document.getElementById("progress-fill").style.width = pct + "%";
     }
 
-    // ── Audio ───────────────────────────────────────────────────────────────
-
     function preloadAudio(id) {
         audioReady = false;
         setPlayBtnLoading();
@@ -442,8 +766,7 @@
     function setPlayBtnLoading() {
         const btn = document.getElementById("play-btn");
         btn.classList.add("loading");
-        document.getElementById("play-icon").innerHTML =
-            `<div class="btn-spinner"></div>`;
+        document.getElementById("play-icon").innerHTML = `<div class="btn-spinner"></div>`;
         document.getElementById("play-hint").textContent = "Loading…";
     }
 
@@ -462,15 +785,13 @@
         playCount++;
         document.getElementById("play-hint").textContent = "Tap to replay";
         if (playCount > 1) {
-            document.getElementById("replay-count").textContent =
-                `Played ${playCount}×`;
+            document.getElementById("replay-count").textContent = `Played ${playCount}×`;
         }
     }
 
-    // ── Question flow ───────────────────────────────────────────────────────
-
     async function loadQuestion() {
         showOnly("loading-state");
+        setVerbChrome(true);
         updateStats();
 
         try {
@@ -506,7 +827,6 @@
     }
 
     async function handleChoice(btn, tense) {
-        // Disable all buttons
         document.querySelectorAll(".choice-btn").forEach(b => b.disabled = true);
 
         try {
@@ -521,21 +841,17 @@
             if (data.correct) score++;
             updateStats();
 
-            // Colour buttons
             document.querySelectorAll(".choice-btn").forEach(b => {
                 if (b.textContent.trim() === data.correct_answer) b.classList.add("correct");
                 else if (b === btn && !data.correct) b.classList.add("wrong");
             });
 
-            // Build feedback
             document.getElementById("feedback-banner").className =
                 "feedback-banner " + (data.correct ? "correct" : "wrong");
-            document.getElementById("feedback-icon").textContent =
-                data.correct ? "✓" : "✗";
+            document.getElementById("feedback-icon").textContent = data.correct ? "✓" : "✗";
             document.getElementById("feedback-title").textContent =
                 data.correct ? "Correct!" : `Incorrect — ${data.correct_answer}`;
 
-            // Highlight verb form in sentence
             const escaped = data.verb_form.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
             const highlighted = data.spanish.replace(
                 new RegExp(`(^|\\s)(${escaped})([\\s,.!?]|$)`, "i"),
@@ -547,7 +863,6 @@
 
             showOnly("question-state", "feedback-state");
 
-            // Update next button label
             document.getElementById("next-btn").textContent =
                 questionNum + 1 >= QUESTIONS_PER_ROUND ? "See Results" : "Next Question →";
 
@@ -565,8 +880,6 @@
         }
     }
 
-    // ── Round complete ──────────────────────────────────────────────────────
-
     function showComplete() {
         document.getElementById("progress-fill").style.width = "100%";
 
@@ -582,11 +895,9 @@
         document.getElementById("final-score").textContent = `${score} / ${QUESTIONS_PER_ROUND}`;
         document.getElementById("final-label").textContent = label;
 
-        document.getElementById("complete-state").style.display = "block";
         showOnly("complete-state");
+        setVerbChrome(true);
     }
-
-    // ── Start ───────────────────────────────────────────────────────────────
 
     function startRound() {
         score = 0;
@@ -596,7 +907,92 @@
         loadQuestion();
     }
 
-    startRound();
+    // ── Phrases mode ─────────────────────────────────────────────────────────
+
+    function startPhraseMode() {
+        mode = "phrase";
+        phraseSeenIds = [];
+        document.getElementById("header-subtitle").textContent = "Common Phrases";
+        setPhraseChrome(true);
+        loadPhrase();
+    }
+
+    async function loadPhrase() {
+        showOnly("loading-state");
+        setPhraseChrome(true);
+
+        try {
+            const exclude = phraseSeenIds.join(",");
+            const res = await fetch(`/api/phrase?exclude=${exclude}`);
+            if (!res.ok) throw new Error("fetch failed");
+            const data = await res.json();
+
+            currentPhraseId = data.id;
+            phraseSeenIds.push(currentPhraseId);
+            phrasePlayCount = 0;
+
+            // Reset UI
+            document.getElementById("phrase-revealed").style.display = "none";
+            document.getElementById("reveal-btn").style.display = "block";
+            document.getElementById("next-phrase-btn").style.display = "none";
+            document.getElementById("phrase-replay-count").textContent = "";
+
+            // Pre-populate content (hidden until reveal)
+            document.getElementById("phrase-es").textContent = data.phrase_es;
+            document.getElementById("phrase-en").textContent = data.phrase_en;
+            document.getElementById("phrase-sentence-es").textContent = data.sentence_es;
+            document.getElementById("phrase-sentence-en").textContent = data.sentence_en;
+
+            preloadPhraseAudio(currentPhraseId);
+            showOnly("phrase-state");
+            setPhraseChrome(true);
+
+        } catch (e) {
+            showOnly("error-state");
+        }
+    }
+
+    function preloadPhraseAudio(id) {
+        phraseAudioReady = false;
+        setPhraseBtnLoading();
+        phraseAudio.src = `/api/audio/phrase/${id}`;
+        phraseAudio.load();
+    }
+
+    function setPhraseBtnLoading() {
+        const btn = document.getElementById("phrase-play-btn");
+        btn.classList.add("loading");
+        document.getElementById("phrase-play-icon").innerHTML = `<div class="btn-spinner"></div>`;
+        document.getElementById("phrase-play-hint").textContent = "Loading…";
+    }
+
+    function setPhrasePlayBtnReady() {
+        const btn = document.getElementById("phrase-play-btn");
+        btn.classList.remove("loading");
+        document.getElementById("phrase-play-icon").textContent = "▶";
+        document.getElementById("phrase-play-hint").textContent = "Tap to replay";
+    }
+
+    function phrasePlayAudio() {
+        if (!phraseAudioReady) return;
+        phraseAudio.currentTime = 0;
+        phraseAudio.play();
+        phrasePlayCount++;
+        document.getElementById("phrase-play-hint").textContent = "Tap to replay";
+        if (phrasePlayCount > 1) {
+            document.getElementById("phrase-replay-count").textContent = `Played ${phrasePlayCount}×`;
+        }
+    }
+
+    function revealPhrase() {
+        document.getElementById("phrase-revealed").style.display = "block";
+        document.getElementById("reveal-btn").style.display = "none";
+        document.getElementById("next-phrase-btn").style.display = "block";
+    }
+
+    // ── Boot ─────────────────────────────────────────────────────────────────
+
+    showOnly("home-state");
 </script>
 </body>
 </html>
