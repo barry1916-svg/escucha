@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from sentences import SENTENCES, TENSES
+from sentences import SENTENCES, TENSES, CANDIDATE_TENSES
 from phrases import PHRASES
 
 app = Flask(__name__)
@@ -57,15 +57,26 @@ def index():
 def question():
     exclude_param = request.args.get("exclude", "")
     exclude_ids = {int(x) for x in exclude_param.split(",") if x.strip().isdigit()}
-    pool = [s for s in SENTENCES if s["id"] not in exclude_ids] or SENTENCES[:]
+
+    tenses_param = request.args.get("tenses", "")
+    active_tenses = [t for t in tenses_param.split(",") if t in CANDIDATE_TENSES]
+    if len(active_tenses) != 4:
+        active_tenses = random.sample(CANDIDATE_TENSES, 4)
+
+    candidates = [s for s in SENTENCES if s["tense"] in active_tenses]
+    pool = [s for s in candidates if s["id"] not in exclude_ids] or candidates
     sentence = random.choice(pool)
 
-    wrong = random.sample([t for t in TENSES if t != sentence["tense"]], 3)
-    choices = wrong + [sentence["tense"]]
+    choices = active_tenses[:]
     random.shuffle(choices)
 
     verb_label = verb_position_label(sentence["spanish"], sentence["verb_form"])
-    return jsonify({"id": sentence["id"], "choices": choices, "verb_label": verb_label})
+    return jsonify({
+        "id": sentence["id"],
+        "choices": choices,
+        "verb_label": verb_label,
+        "active_tenses": active_tenses,
+    })
 
 
 @app.route("/api/audio/<int:sentence_id>")

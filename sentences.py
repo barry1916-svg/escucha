@@ -9,6 +9,16 @@ TENSES = [
     "Imperativo",
 ]
 
+# Pool for the verb-quiz round: each round quizzes on 4 of these 5 tenses,
+# picked at random, so which four are offered varies round to round.
+CANDIDATE_TENSES = [
+    "Pretérito indefinido",
+    "Pretérito imperfecto",
+    "Pretérito perfecto compuesto",
+    "Presente de subjuntivo",
+    "Imperativo",
+]
+
 SENTENCES = [
     # ── Presente de indicativo ──────────────────────────────────────────────
     {

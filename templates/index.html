@@ -661,6 +661,21 @@
 <script>
     const QUESTIONS_PER_ROUND = 10;
 
+    // Pool of tenses the verb quiz can draw from; each round uses a random 4 of these 5,
+    // so which tenses are offered varies round to round.
+    const CANDIDATE_TENSES = [
+        "Pretérito indefinido",
+        "Pretérito imperfecto",
+        "Pretérito perfecto compuesto",
+        "Presente de subjuntivo",
+        "Imperativo",
+    ];
+
+    function pickActiveTenses() {
+        const shuffled = [...CANDIDATE_TENSES].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, 4);
+    }
+
     // ── State ────────────────────────────────────────────────────────────────
     let mode = "home"; // "home" | "verb" | "phrase"
 
@@ -671,6 +686,7 @@
     let seenIds = [];
     let currentId = null;
     let currentChoices = [];
+    let activeTenses = [];
     let playCount = 0;
     let audioReady = false;
 
@@ -796,7 +812,8 @@
 
         try {
             const exclude = seenIds.join(",");
-            const res = await fetch(`/api/question?exclude=${exclude}`);
+            const tenses = activeTenses.map(encodeURIComponent).join(",");
+            const res = await fetch(`/api/question?exclude=${exclude}&tenses=${tenses}`);
             if (!res.ok) throw new Error("fetch failed");
             const data = await res.json();
 
@@ -904,6 +921,7 @@
         answered = 0;
         questionNum = 0;
         seenIds = [];
+        activeTenses = pickActiveTenses();
         loadQuestion();
     }
 
