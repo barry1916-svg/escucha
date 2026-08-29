@@ -692,4 +692,11 @@ PHRASES = [
         "phrase_es": "ni fu ni fa",
         "phrase_en": "so-so / neither here nor there",
     },
+    {
+        "id": 100,
+        "sentence_es": "Perdone, ¿a qué distancia está el centro desde aquí?",
+        "sentence_en": "Excuse me, how far is the city center from here?",
+        "phrase_es": "¿a qué distancia está...?",
+        "phrase_en": "how far is...?",
+    },
 ]
