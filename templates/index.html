@@ -532,6 +532,317 @@
 
         #next-phrase-btn:hover { opacity: 0.88; }
 
+        /* ── Wishes mode ── */
+        #wish-state, #wish-complete-state { display: none; position: relative; }
+
+        .wish-top {
+            background: linear-gradient(135deg, #6B2FA0 0%, #4c1d75 100%);
+            color: white;
+            padding: 18px 20px 16px;
+        }
+
+        .wish-skills {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .wish-skill {
+            flex: 1;
+            max-width: 110px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 10px;
+            padding: 6px 4px;
+            text-align: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            opacity: 0.55;
+            transition: opacity 0.2s, background 0.2s, transform 0.2s;
+        }
+
+        .wish-skill .ws-icon { display: block; font-size: 1.2rem; margin-bottom: 2px; }
+        .wish-skill.active { opacity: 1; background: rgba(255,255,255,0.28); transform: translateY(-2px); }
+
+        .wish-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        #wish-streak { color: #ffd166; min-width: 3em; text-align: center; }
+
+        .wish-progress {
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        #wish-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #ffd166;
+            transition: width 0.4s ease;
+        }
+
+        .wish-body { padding: 20px 24px 8px; }
+
+        .wish-instr {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 14px;
+        }
+
+        .wish-play {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: none;
+            background: #6B2FA0;
+            color: white;
+            font-size: 1.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 6px auto 8px;
+            transition: transform 0.1s, opacity 0.15s;
+        }
+
+        .wish-play:active { transform: scale(0.95); }
+        .wish-play.playing { animation: pulse 1s ease-in-out infinite; }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(107,47,160,0.45); }
+            50%      { box-shadow: 0 0 0 14px rgba(107,47,160,0); }
+        }
+
+        .wish-hint {
+            text-align: center;
+            font-size: 0.78rem;
+            color: #999;
+            margin-bottom: 16px;
+        }
+
+        .wish-sentence {
+            font-size: 1.2rem;
+            line-height: 1.55;
+            color: #222;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .wish-sentence .blank {
+            display: inline-block;
+            min-width: 70px;
+            border-bottom: 3px dashed #6B2FA0;
+            color: #6B2FA0;
+            text-align: center;
+        }
+
+        .wish-sentence .inf { font-size: 0.85rem; color: #6B2FA0; font-weight: 700; }
+        .wish-sentence strong { color: #6B2FA0; font-weight: 800; }
+
+        .wish-en {
+            font-size: 0.88rem;
+            color: #888;
+            font-style: italic;
+            margin-bottom: 16px;
+        }
+
+        .wish-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .wish-opt {
+            background: #F3EEF8;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 14px 6px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, transform 0.1s;
+        }
+
+        .wish-opt:hover:not(:disabled) { border-color: #6B2FA0; color: #6B2FA0; }
+        .wish-opt:active:not(:disabled) { transform: scale(0.97); }
+        .wish-opt:disabled { cursor: default; }
+        .wish-opt.correct { background: #dcfce7; border-color: #16a34a; color: #15803d; }
+        .wish-opt.wrong   { background: #fee2e2; border-color: #dc2626; color: #b91c1c; }
+
+        .wish-write-row { display: flex; gap: 8px; margin-bottom: 10px; }
+
+        #wish-input {
+            flex: 1;
+            min-width: 0;
+            font-size: 1.05rem;
+            padding: 12px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            outline: none;
+        }
+
+        #wish-input:focus { border-color: #6B2FA0; }
+        #wish-input.correct { border-color: #16a34a; background: #f0fdf4; }
+        #wish-input.wrong   { border-color: #dc2626; background: #fef2f2; }
+
+        .wish-btn {
+            background: #6B2FA0;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .wish-btn:hover { opacity: 0.88; }
+        .wish-btn:disabled { opacity: 0.4; cursor: default; }
+        .wish-btn.secondary { background: #F3EEF8; color: #6B2FA0; }
+
+        .accent-keys { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+
+        .accent-key {
+            background: #F3EEF8;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #6B2FA0;
+            cursor: pointer;
+        }
+
+        .wish-prompt-en {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 6px;
+        }
+
+        .wish-starter { font-size: 0.85rem; color: #6B2FA0; font-weight: 700; margin-bottom: 18px; }
+
+        .mic-btn {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            border: none;
+            background: #6B2FA0;
+            color: white;
+            font-size: 2.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+        }
+
+        .mic-btn.listening { background: #dc2626; animation: pulse-red 1s ease-in-out infinite; }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.45); }
+            50%      { box-shadow: 0 0 0 16px rgba(220,38,38,0); }
+        }
+
+        .transcript {
+            min-height: 1.6em;
+            text-align: center;
+            font-size: 1rem;
+            margin: 6px 0 12px;
+            color: #444;
+        }
+
+        .transcript .hit  { color: #15803d; font-weight: 700; }
+        .transcript .miss { color: #aaa; }
+
+        .wish-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
+
+        #wish-feedback { display: none; padding: 0 24px 4px; }
+
+        .wish-banner {
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .wish-banner.correct { background: #dcfce7; color: #15803d; }
+        .wish-banner.wrong   { background: #fee2e2; color: #b91c1c; }
+
+        .wish-why {
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.55;
+            background: #F7F3EE;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+        }
+
+        #wish-next-btn {
+            display: none;
+            width: calc(100% - 48px);
+            margin: 4px 24px 24px;
+            padding: 14px;
+            background: #6B2FA0;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 1.3rem;
+            animation: float-up 1s ease-out forwards;
+        }
+
+        @keyframes float-up {
+            from { opacity: 1; transform: translateY(0) scale(0.6); }
+            to   { opacity: 0; transform: translateY(-90px) scale(1.2); }
+        }
+
+        #wish-complete-state { text-align: center; padding: 40px 28px; }
+        #wish-complete-state .result-emoji { font-size: 4rem; margin-bottom: 12px; }
+        #wish-complete-state h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+        #wish-final-points { font-size: 2.6rem; font-weight: 800; color: #6B2FA0; margin: 10px 0 4px; }
+        #wish-final-label { color: #888; margin-bottom: 20px; }
+        #wish-play-again-btn { padding: 16px 48px; font-size: 1rem; border-radius: 14px; }
+
+        .skill-results {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .skill-result {
+            background: #F3EEF8;
+            border-radius: 12px;
+            padding: 10px 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #6B2FA0;
+        }
+
+        .skill-result .sr-icon { display: block; font-size: 1.4rem; margin-bottom: 4px; }
+        .skill-result .sr-score { display: block; font-size: 1rem; color: #222; }
+
         /* ── Error ── */
         #error-state {
             display: none;
@@ -590,6 +901,11 @@
                 <div class="mode-icon">💬</div>
                 <div class="mode-title">Common Phrases</div>
                 <div class="mode-desc">Learn everyday Spanish expressions</div>
+            </button>
+            <button class="mode-btn" onclick="startWishMode()">
+                <div class="mode-icon">🌠</div>
+                <div class="mode-title">¡Ojalá! Wishes</div>
+                <div class="mode-desc">Make wishes with the subjunctive — listen, read, write &amp; speak</div>
             </button>
         </div>
     </div>
@@ -653,10 +969,42 @@
             <button id="next-phrase-btn" onclick="loadPhrase()" style="display:none">Next Phrase →</button>
         </div>
     </div>
+
+    <!-- Wishes -->
+    <div class="card" id="wish-state">
+        <div class="wish-top">
+            <div class="wish-skills">
+                <div class="wish-skill" id="ws-listen"><span class="ws-icon">🎧</span>Escucha</div>
+                <div class="wish-skill" id="ws-read"><span class="ws-icon">📖</span>Lee</div>
+                <div class="wish-skill" id="ws-write"><span class="ws-icon">✍️</span>Escribe</div>
+                <div class="wish-skill" id="ws-speak"><span class="ws-icon">🗣️</span>Habla</div>
+            </div>
+            <div class="wish-meta">
+                <span id="wish-step-label">Paso 1 de 8</span>
+                <span id="wish-streak"></span>
+                <span id="wish-points">⭐ 0</span>
+            </div>
+            <div class="wish-progress"><div id="wish-progress-fill"></div></div>
+        </div>
+        <div class="wish-body" id="wish-body"></div>
+        <div id="wish-feedback"></div>
+        <button id="wish-next-btn" onclick="nextWishStep()">Siguiente →</button>
+    </div>
+
+    <!-- Wishes: Complete -->
+    <div class="card" id="wish-complete-state">
+        <div class="result-emoji" id="wish-result-emoji"></div>
+        <h2>¡Deseos cumplidos!</h2>
+        <div id="wish-final-points"></div>
+        <div id="wish-final-label"></div>
+        <div class="skill-results" id="wish-skill-results"></div>
+        <button class="wish-btn" id="wish-play-again-btn" onclick="startWishMode()">Play Again</button>
+    </div>
 </main>
 
 <audio id="audio-player" preload="auto"></audio>
 <audio id="phrase-audio-player" preload="auto"></audio>
+<audio id="wish-audio-player" preload="auto"></audio>
 
 <script>
     const QUESTIONS_PER_ROUND = 10;
@@ -721,7 +1069,8 @@
     // ── Screen management ────────────────────────────────────────────────────
 
     const ALL_SCREENS = ["loading-state", "error-state", "home-state",
-                         "question-state", "feedback-state", "complete-state", "phrase-state"];
+                         "question-state", "feedback-state", "complete-state", "phrase-state",
+                         "wish-state", "wish-complete-state"];
 
     function showOnly(...ids) {
         ALL_SCREENS.forEach(id => {
@@ -749,6 +1098,7 @@
 
     function goHome() {
         mode = "home";
+        stopWishActivity();
         setVerbChrome(false);
         document.getElementById("header-subtitle").textContent = "Spanish Listening Practice";
         showOnly("home-state");
@@ -1006,6 +1356,421 @@
         document.getElementById("phrase-revealed").style.display = "block";
         document.getElementById("reveal-btn").style.display = "none";
         document.getElementById("next-phrase-btn").style.display = "block";
+    }
+
+    // ── Wishes mode ──────────────────────────────────────────────────────────
+    // A round is WISH_STEPS steps cycling through four skills, each on a
+    // different wish sentence. Answers are checked in the browser.
+
+    const WISH_STEPS = 8;
+    const WISH_SKILLS = ["listen", "read", "write", "speak"];
+    const WISH_SKILL_INFO = {
+        listen: { icon: "🎧", name: "Escucha" },
+        read:   { icon: "📖", name: "Lee" },
+        write:  { icon: "✍️", name: "Escribe" },
+        speak:  { icon: "🗣️", name: "Habla" },
+    };
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    let wishItems = [];
+    let wishStep = 0;
+    let wishPoints = 0;
+    let wishStreak = 0;
+    let wishAnswered = false;
+    let wishResults = {};
+    let recognizer = null;
+
+    const wishAudio = document.getElementById("wish-audio-player");
+    wishAudio.addEventListener("playing", () => setWishPlaying(true));
+    wishAudio.addEventListener("ended", () => setWishPlaying(false));
+    wishAudio.addEventListener("pause", () => setWishPlaying(false));
+
+    function esc(s) {
+        return String(s).replace(/[&<>"']/g, c =>
+            ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    // Lowercase, strip accents and punctuation, split into words.
+    function normWords(s) {
+        return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+            .replace(/[¿?¡!.,;:«»"]/g, " ").split(/\s+/).filter(Boolean);
+    }
+
+    function stripAccents(s) {
+        return s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+    }
+
+    // Regex matching the answer as a whole word inside the sentence.
+    function answerRegex(answer) {
+        const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return new RegExp(`(^|[\\s¡¿])(${escaped})(?=[\\s,.!?]|$)`, "i");
+    }
+
+    function sentenceWithBlank(item) {
+        return esc(item.es).replace(answerRegex(item.answer),
+            (_, pre) => `${pre}<span class="blank">&nbsp;?&nbsp;</span>`);
+    }
+
+    function sentenceHighlighted(item) {
+        return esc(item.es).replace(answerRegex(item.answer),
+            (_, pre, word) => `${pre}<strong>${word}</strong>`);
+    }
+
+    function shuffle(arr) {
+        return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    async function startWishMode() {
+        mode = "wish";
+        document.getElementById("header-subtitle").textContent = "¡Ojalá! Wishes with the subjunctive";
+        setVerbChrome(false);
+        setPhraseChrome(true);
+        showOnly("loading-state");
+        try {
+            const res = await fetch(`/api/wishes?n=${WISH_STEPS}`);
+            if (!res.ok) throw new Error("fetch failed");
+            wishItems = await res.json();
+        } catch (e) {
+            showOnly("error-state");
+            return;
+        }
+        wishStep = 0;
+        wishPoints = 0;
+        wishStreak = 0;
+        wishResults = { listen: [0, 0], read: [0, 0], write: [0, 0], speak: [0, 0] };
+        renderWishStep();
+    }
+
+    function currentWish()  { return wishItems[wishStep]; }
+    function currentSkill() { return WISH_SKILLS[wishStep % WISH_SKILLS.length]; }
+
+    function updateWishHeader() {
+        WISH_SKILLS.forEach(s =>
+            document.getElementById(`ws-${s}`).classList.toggle("active", s === currentSkill()));
+        document.getElementById("wish-step-label").textContent = `Paso ${wishStep + 1} de ${WISH_STEPS}`;
+        document.getElementById("wish-points").textContent = `⭐ ${wishPoints}`;
+        document.getElementById("wish-streak").textContent = wishStreak >= 2 ? `🔥 ${wishStreak}` : "";
+        document.getElementById("wish-progress-fill").style.width = `${(wishStep / WISH_STEPS) * 100}%`;
+    }
+
+    function renderWishStep() {
+        stopWishActivity();
+        wishAnswered = false;
+        const item = currentWish();
+        const skill = currentSkill();
+        const body = document.getElementById("wish-body");
+        document.getElementById("wish-feedback").style.display = "none";
+        document.getElementById("wish-next-btn").style.display = "none";
+        updateWishHeader();
+        showOnly("wish-state");
+
+        const options = shuffle(item.options).map(o =>
+            `<button class="wish-opt" onclick="chooseWishOption(this, '${esc(o)}')">${esc(o)}</button>`
+        ).join("");
+
+        if (skill === "listen") {
+            body.innerHTML = `
+                <p class="wish-instr">🎧 Listen to the wish. Which verb form did you hear?</p>
+                <button class="wish-play" id="wish-play" onclick="playWish()">▶</button>
+                <p class="wish-hint" id="wish-play-hint">Tap to listen — as many times as you like</p>
+                <div class="wish-options">${options}</div>`;
+            playWish();
+        } else if (skill === "read") {
+            body.innerHTML = `
+                <p class="wish-instr">📖 Read the wish and choose the right form.</p>
+                <p class="wish-sentence">${sentenceWithBlank(item)} <span class="inf">(${esc(item.infinitive)})</span></p>
+                <p class="wish-en">${esc(item.en)}</p>
+                <div class="wish-options">${options}</div>`;
+        } else if (skill === "write") {
+            body.innerHTML = `
+                <p class="wish-instr">✍️ Write the missing verb.</p>
+                <p class="wish-sentence">${sentenceWithBlank(item)} <span class="inf">(${esc(item.infinitive)})</span></p>
+                <p class="wish-en">${esc(item.en)}</p>
+                <div class="wish-write-row">
+                    <input id="wish-input" type="text" autocomplete="off" autocapitalize="off"
+                           spellcheck="false" placeholder="Type here…"
+                           onkeydown="if (event.key === 'Enter') checkWishWriting()">
+                    <button class="wish-btn" id="wish-check-btn" onclick="checkWishWriting()">Check</button>
+                </div>
+                <div class="accent-keys">
+                    ${["á", "é", "í", "ó", "ú", "ñ"].map(c =>
+                        `<button class="accent-key" onclick="insertAccent('${c}')">${c}</button>`).join("")}
+                </div>`;
+            document.getElementById("wish-input").focus();
+        } else {
+            renderSpeakStep(item, body);
+        }
+    }
+
+    function renderSpeakStep(item, body) {
+        // Hint with the words before the target verb, so the verb itself stays hidden.
+        const words = item.es.split(" ");
+        const verbIdx = words.findIndex(w => normWords(w)[0] === normWords(item.answer)[0]);
+        const starter = words.slice(0, Math.max(verbIdx, 1)).join(" ");
+        const micPart = SpeechRec
+            ? `<button class="mic-btn" id="mic-btn" onclick="toggleListening()">🎙️</button>
+               <p class="wish-hint" id="mic-hint">Tap the mic and say the wish in Spanish</p>
+               <p class="transcript" id="transcript"></p>
+               <div class="wish-row">
+                   <button class="wish-btn secondary" onclick="playWish()">🔊 Hear a hint</button>
+                   <button class="wish-btn secondary" onclick="giveUpSpeaking()">Show me</button>
+               </div>`
+            : `<p class="wish-hint">Your browser can't check speech, so say the wish out loud, then compare.</p>
+               <div class="wish-row">
+                   <button class="wish-btn" onclick="revealSelfCheck()">I said it — compare</button>
+               </div>
+               <div id="self-check"></div>`;
+        body.innerHTML = `
+            <p class="wish-instr">🗣️ Say this wish in Spanish:</p>
+            <p class="wish-prompt-en">“${esc(item.en)}”</p>
+            <p class="wish-starter">Starts with: ${esc(starter)}…</p>
+            ${micPart}`;
+    }
+
+    // ── Audio ──
+
+    function setWishPlaying(on) {
+        const btn = document.getElementById("wish-play");
+        if (btn) btn.classList.toggle("playing", on);
+    }
+
+    function playWish() {
+        const src = `/api/audio/wish/${currentWish().id}`;
+        if (!wishAudio.src.endsWith(src)) wishAudio.src = src;
+        wishAudio.currentTime = 0;
+        const hint = document.getElementById("wish-play-hint");
+        wishAudio.play().catch(() => {
+            if (hint) hint.textContent = "Tap ▶ to listen";
+        });
+    }
+
+    function stopWishActivity() {
+        wishAudio.pause();
+        if (recognizer) {
+            recognizer.onresult = recognizer.onend = recognizer.onerror = null;
+            recognizer.abort();
+            recognizer = null;
+        }
+    }
+
+    // ── Answering ──
+
+    function chooseWishOption(btn, choice) {
+        if (wishAnswered) return;
+        const item = currentWish();
+        const correct = choice === item.answer;
+        document.querySelectorAll(".wish-opt").forEach(b => {
+            b.disabled = true;
+            if (b.textContent === item.answer) b.classList.add("correct");
+            else if (b === btn) b.classList.add("wrong");
+        });
+        finishWishStep(correct, correct ? "¡Muy bien!" : `Not quite — it's “${item.answer}”`);
+    }
+
+    function insertAccent(c) {
+        const input = document.getElementById("wish-input");
+        const start = input.selectionStart ?? input.value.length;
+        const end = input.selectionEnd ?? input.value.length;
+        input.value = input.value.slice(0, start) + c + input.value.slice(end);
+        input.focus();
+        input.setSelectionRange(start + 1, start + 1);
+    }
+
+    function checkWishWriting() {
+        if (wishAnswered) return;
+        const input = document.getElementById("wish-input");
+        const typed = input.value.trim().toLowerCase();
+        if (!typed) return;
+        const answer = currentWish().answer.toLowerCase();
+        input.disabled = true;
+        document.getElementById("wish-check-btn").disabled = true;
+        let correct = false, title;
+        if (typed === answer) {
+            correct = true;
+            title = "¡Perfecto!";
+        } else if (stripAccents(typed) === stripAccents(answer)) {
+            correct = true;
+            title = `Right verb — watch the accent: “${currentWish().answer}”`;
+        } else {
+            title = `Not quite — it's “${currentWish().answer}”`;
+        }
+        input.classList.add(correct ? "correct" : "wrong");
+        finishWishStep(correct, title);
+    }
+
+    // ── Speaking ──
+
+    function toggleListening() {
+        if (wishAnswered) return;
+        if (recognizer) { recognizer.stop(); return; }
+        wishAudio.pause();
+        const mic = document.getElementById("mic-btn");
+        const hint = document.getElementById("mic-hint");
+        recognizer = new SpeechRec();
+        recognizer.lang = "es-ES";
+        recognizer.interimResults = true;
+        recognizer.maxAlternatives = 3;
+
+        recognizer.onresult = (event) => {
+            const result = event.results[event.results.length - 1];
+            document.getElementById("transcript").textContent = result[0].transcript;
+            if (result.isFinal) {
+                const alts = Array.from(result).map(a => a.transcript);
+                recognizer.onend = null;
+                recognizer = null;
+                mic.classList.remove("listening");
+                evaluateSpeech(alts);
+            }
+        };
+        recognizer.onerror = (event) => {
+            mic.classList.remove("listening");
+            recognizer = null;
+            hint.textContent = event.error === "not-allowed"
+                ? "Microphone blocked — allow it in your browser, or tap “Show me”."
+                : "Didn't catch that — tap the mic and try again.";
+        };
+        recognizer.onend = () => {
+            mic.classList.remove("listening");
+            recognizer = null;
+            if (!wishAnswered) hint.textContent = "Didn't catch that — tap the mic and try again.";
+        };
+
+        mic.classList.add("listening");
+        hint.textContent = "Listening… speak now";
+        recognizer.start();
+    }
+
+    // Correct when the target verb was said and most of the sentence matches.
+    function evaluateSpeech(alternatives) {
+        const item = currentWish();
+        const target = normWords(item.es);
+        const verb = normWords(item.answer)[0];
+        let best = null;
+        alternatives.forEach(text => {
+            const words = normWords(text);
+            const hits = target.filter(w => words.includes(w)).length;
+            const score = { text, words, hasVerb: words.includes(verb), overlap: hits / target.length };
+            if (!best || (score.hasVerb && !best.hasVerb) ||
+                (score.hasVerb === best.hasVerb && score.overlap > best.overlap)) best = score;
+        });
+
+        const targetSet = new Set(target);
+        document.getElementById("transcript").innerHTML = best.text.split(/\s+/).map(w =>
+            `<span class="${targetSet.has(normWords(w)[0]) ? "hit" : "miss"}">${esc(w)}</span>`
+        ).join(" ");
+
+        const correct = best.hasVerb && best.overlap >= 0.6;
+        let title;
+        if (correct) title = `¡Genial! ${Math.round(best.overlap * 100)}% match`;
+        else if (!best.hasVerb) title = `Close — the key verb is “${item.answer}”`;
+        else title = "Good verb! Try to say the whole sentence";
+        finishWishStep(correct, title);
+    }
+
+    function giveUpSpeaking() {
+        if (wishAnswered) return;
+        stopWishActivity();
+        finishWishStep(false, "Here's how to say it — listen and repeat");
+        playWish();
+    }
+
+    function revealSelfCheck() {
+        const item = currentWish();
+        document.getElementById("self-check").innerHTML = `
+            <p class="wish-sentence" style="text-align:center">${sentenceHighlighted(item)}</p>
+            <div class="wish-row">
+                <button class="wish-btn" onclick="selfAssess(true)">✓ I said that</button>
+                <button class="wish-btn secondary" onclick="selfAssess(false)">✗ Not quite</button>
+            </div>`;
+        playWish();
+    }
+
+    function selfAssess(correct) {
+        if (wishAnswered) return;
+        document.getElementById("self-check").innerHTML = "";
+        finishWishStep(correct, correct ? "¡Genial!" : "Keep practising — listen once more");
+    }
+
+    // ── Feedback & scoring ──
+
+    function finishWishStep(correct, title) {
+        wishAnswered = true;
+        const item = currentWish();
+        const skill = currentSkill();
+        wishResults[skill][1]++;
+        if (correct) {
+            wishResults[skill][0]++;
+            wishStreak++;
+            const gained = 10 + (wishStreak >= 3 ? 5 : 0);
+            wishPoints += gained;
+            sparkle(gained);
+        } else {
+            wishStreak = 0;
+        }
+        updateWishHeader();
+
+        const fb = document.getElementById("wish-feedback");
+        fb.innerHTML = `
+            <div class="wish-banner ${correct ? "correct" : "wrong"}">${correct ? "✓" : "✗"} ${esc(title)}</div>
+            ${skill === "read" || skill === "write" ? "" :
+                `<p class="wish-sentence">${sentenceHighlighted(item)}</p><p class="wish-en">${esc(item.en)}</p>`}
+            <p class="wish-why">${esc(item.why)}</p>
+            ${skill === "listen" ? "" :
+                `<div class="wish-row"><button class="wish-btn secondary" onclick="playWish()">🔊 Listen</button></div>`}`;
+        fb.style.display = "block";
+
+        if (skill === "read" || skill === "write") {
+            document.querySelector("#wish-body .wish-sentence").innerHTML =
+                `${sentenceHighlighted(item)}`;
+        }
+
+        const next = document.getElementById("wish-next-btn");
+        next.textContent = wishStep + 1 >= WISH_STEPS ? "See results" : "Siguiente →";
+        next.style.display = "block";
+    }
+
+    function sparkle(gained) {
+        const card = document.getElementById("wish-state");
+        const marks = ["✨", "⭐", "🌟", `+${gained}`];
+        for (let i = 0; i < 8; i++) {
+            const s = document.createElement("span");
+            s.className = "sparkle";
+            s.textContent = marks[i % marks.length];
+            s.style.left = `${10 + Math.random() * 80}%`;
+            s.style.top = `${30 + Math.random() * 40}%`;
+            s.style.animationDelay = `${Math.random() * 0.25}s`;
+            if (s.textContent.startsWith("+")) { s.style.color = "#6B2FA0"; s.style.fontWeight = "800"; }
+            card.appendChild(s);
+            setTimeout(() => s.remove(), 1400);
+        }
+    }
+
+    function nextWishStep() {
+        wishStep++;
+        if (wishStep >= WISH_STEPS) showWishComplete();
+        else renderWishStep();
+    }
+
+    function showWishComplete() {
+        stopWishActivity();
+        const right = WISH_SKILLS.reduce((n, s) => n + wishResults[s][0], 0);
+        const pct = right / WISH_STEPS;
+        let emoji, label;
+        if (pct === 1)       { emoji = "🌠"; label = "Every wish came true — ¡Increíble!"; }
+        else if (pct >= 0.75) { emoji = "🌟"; label = "¡Muy bien! Your wishes are in great shape."; }
+        else if (pct >= 0.5)  { emoji = "👍"; label = "¡Bien hecho! Ojalá sigas practicando."; }
+        else                  { emoji = "💪"; label = "¡Ánimo! Ojalá la próxima vez salga mejor."; }
+
+        document.getElementById("wish-result-emoji").textContent = emoji;
+        document.getElementById("wish-final-points").textContent = `⭐ ${wishPoints}`;
+        document.getElementById("wish-final-label").textContent = `${right} of ${WISH_STEPS} correct · ${label}`;
+        document.getElementById("wish-skill-results").innerHTML = WISH_SKILLS.map(s => `
+            <div class="skill-result">
+                <span class="sr-icon">${WISH_SKILL_INFO[s].icon}</span>
+                <span class="sr-score">${wishResults[s][0]}/${wishResults[s][1]}</span>
+                ${WISH_SKILL_INFO[s].name}
+            </div>`).join("");
+        showOnly("wish-complete-state");
     }
 
     // ── Boot ─────────────────────────────────────────────────────────────────

@@ -17,6 +17,7 @@ load_dotenv()
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from sentences import SENTENCES, TENSES, CANDIDATE_TENSES
 from phrases import PHRASES
+from wishes import WISHES
 
 app = Flask(__name__)
 
@@ -124,6 +125,32 @@ def phrase_audio(phrase_id):
     if cache_key not in _audio_cache:
         try:
             _audio_cache[cache_key] = asyncio.run(_tts_bytes(p["sentence_es"]))
+        except Exception as exc:
+            return f"TTS error: {exc}", 503
+    resp = send_file(
+        io.BytesIO(_audio_cache[cache_key]),
+        mimetype="audio/mpeg",
+        as_attachment=False,
+    )
+    resp.headers["Cache-Control"] = "public, max-age=86400"
+    return resp
+
+
+@app.route("/api/wishes")
+def wishes():
+    n = min(request.args.get("n", 8, type=int), len(WISHES))
+    return jsonify(random.sample(WISHES, n))
+
+
+@app.route("/api/audio/wish/<int:wish_id>")
+def wish_audio(wish_id):
+    w = next((x for x in WISHES if x["id"] == wish_id), None)
+    if not w:
+        return "Not found", 404
+    cache_key = f"wish_{wish_id}"
+    if cache_key not in _audio_cache:
+        try:
+            _audio_cache[cache_key] = asyncio.run(_tts_bytes(w["es"]))
         except Exception as exc:
             return f"TTS error: {exc}", 503
     resp = send_file(
