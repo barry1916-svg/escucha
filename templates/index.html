@@ -552,14 +552,20 @@
             flex: 1;
             max-width: 110px;
             background: rgba(255,255,255,0.12);
+            border: none;
             border-radius: 10px;
             padding: 6px 4px;
             text-align: center;
+            font: inherit;
             font-size: 0.72rem;
             font-weight: 700;
+            color: white;
             opacity: 0.55;
+            cursor: pointer;
             transition: opacity 0.2s, background 0.2s, transform 0.2s;
         }
+
+        .wish-skill:hover { opacity: 0.85; background: rgba(255,255,255,0.2); }
 
         .wish-skill .ws-icon { display: block; font-size: 1.2rem; margin-bottom: 2px; }
         .wish-skill.active { opacity: 1; background: rgba(255,255,255,0.28); transform: translateY(-2px); }
@@ -974,10 +980,10 @@
     <div class="card" id="wish-state">
         <div class="wish-top">
             <div class="wish-skills">
-                <div class="wish-skill" id="ws-listen"><span class="ws-icon">🎧</span>Escucha</div>
-                <div class="wish-skill" id="ws-read"><span class="ws-icon">📖</span>Lee</div>
-                <div class="wish-skill" id="ws-write"><span class="ws-icon">✍️</span>Escribe</div>
-                <div class="wish-skill" id="ws-speak"><span class="ws-icon">🗣️</span>Habla</div>
+                <button class="wish-skill" id="ws-listen" onclick="switchWishSkill('listen')"><span class="ws-icon">🎧</span>Escucha</button>
+                <button class="wish-skill" id="ws-read" onclick="switchWishSkill('read')"><span class="ws-icon">📖</span>Lee</button>
+                <button class="wish-skill" id="ws-write" onclick="switchWishSkill('write')"><span class="ws-icon">✍️</span>Escribe</button>
+                <button class="wish-skill" id="ws-speak" onclick="switchWishSkill('speak')"><span class="ws-icon">🗣️</span>Habla</button>
             </div>
             <div class="wish-meta">
                 <span id="wish-step-label">Paso 1 de 8</span>
@@ -1378,6 +1384,7 @@
     let wishStreak = 0;
     let wishAnswered = false;
     let wishResults = {};
+    let wishSkills = [];  // skill for each step; the skill tabs can change it
     let recognizer = null;
 
     const wishAudio = document.getElementById("wish-audio-player");
@@ -1438,11 +1445,33 @@
         wishPoints = 0;
         wishStreak = 0;
         wishResults = { listen: [0, 0], read: [0, 0], write: [0, 0], speak: [0, 0] };
+        setWishSkillsFrom(0, WISH_SKILLS[0]);
         renderWishStep();
     }
 
     function currentWish()  { return wishItems[wishStep]; }
-    function currentSkill() { return WISH_SKILLS[wishStep % WISH_SKILLS.length]; }
+    function currentSkill() { return wishSkills[wishStep]; }
+
+    // Steps from `step` onward cycle through the skills starting at `skill`.
+    function setWishSkillsFrom(step, skill) {
+        const start = WISH_SKILLS.indexOf(skill);
+        for (let i = step; i < WISH_STEPS; i++) {
+            wishSkills[i] = WISH_SKILLS[(start + i - step) % WISH_SKILLS.length];
+        }
+    }
+
+    // Skill tab: redo the current wish in that skill, or if it's already
+    // answered, move on to the next wish in that skill.
+    function switchWishSkill(skill) {
+        if (wishAnswered) {
+            if (wishStep + 1 >= WISH_STEPS) return;
+            wishStep++;
+        } else if (skill === currentSkill()) {
+            return;
+        }
+        setWishSkillsFrom(wishStep, skill);
+        renderWishStep();
+    }
 
     function updateWishHeader() {
         WISH_SKILLS.forEach(s =>
