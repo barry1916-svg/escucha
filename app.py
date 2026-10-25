@@ -139,7 +139,24 @@ def phrase_audio(phrase_id):
 @app.route("/api/wishes")
 def wishes():
     n = min(request.args.get("n", 8, type=int), len(WISHES))
-    return jsonify(random.sample(WISHES, n))
+    exclude_param = request.args.get("exclude", "")
+    exclude_ids = {int(x) for x in exclude_param.split(",") if x.strip().isdigit()}
+
+    def pick(pool, k):
+        # Unseen items first; top up from seen ones only if the pool runs out.
+        fresh = [w for w in pool if w["id"] not in exclude_ids]
+        seen = [w for w in pool if w["id"] in exclude_ids]
+        random.shuffle(fresh)
+        random.shuffle(seen)
+        return (fresh + seen)[:k]
+
+    # About a quarter of each round are "trap" sentences that need the indicative.
+    traps = [w for w in WISHES if w["rule"] == "indicativo"]
+    others = [w for w in WISHES if w["rule"] != "indicativo"]
+    n_traps = min(round(n / 4), len(traps))
+    chosen = pick(traps, n_traps) + pick(others, n - n_traps)
+    random.shuffle(chosen)
+    return jsonify(chosen)
 
 
 @app.route("/api/audio/wish/<int:wish_id>")

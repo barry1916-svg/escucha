@@ -1435,27 +1435,49 @@
         showOnly("loading-state");
         let items;
         try {
-            const res = await fetch(`/api/wishes?n=${WISH_PER_SKILL * WISH_SKILLS.length}`);
+            const seen = loadWishSeen();
+            const res = await fetch(`/api/wishes?n=${WISH_PER_SKILL * WISH_SKILLS.length}&exclude=${seen.join(",")}`);
             if (!res.ok) throw new Error("fetch failed");
             items = await res.json();
+            saveWishSeen([...seen, ...items.map(i => i.id)]);
         } catch (e) {
             showOnly("error-state");
             return;
         }
-        // Deal the distinct sentences out so no two tabs share a question.
+        // Deal the distinct sentences out round-robin, traps first, so no two
+        // tabs share a question and every tab gets at least one trap.
         wishTabs = {};
-        WISH_SKILLS.forEach((s, i) => {
-            wishTabs[s] = {
-                items: items.slice(i * WISH_PER_SKILL, (i + 1) * WISH_PER_SKILL),
-                idx: 0,
-                answered: false,
-                right: 0,
-            };
-        });
+        WISH_SKILLS.forEach(s => { wishTabs[s] = { items: [], idx: 0, answered: false, right: 0 }; });
+        const traps = items.filter(i => i.rule === "indicativo");
+        const others = items.filter(i => i.rule !== "indicativo");
+        [...traps, ...others].forEach((item, i) =>
+            wishTabs[WISH_SKILLS[i % WISH_SKILLS.length]].items.push(item));
+        WISH_SKILLS.forEach(s => { wishTabs[s].items = shuffle(wishTabs[s].items); });
         wishSkill = WISH_SKILLS[0];
         wishPoints = 0;
         wishStreak = 0;
         renderWishStep();
+    }
+
+    // Wishes seen in recent rounds, so the server can serve fresh ones first.
+    // Kept per browser; the app works the same if storage is unavailable.
+    const WISH_SEEN_KEY = "escucha-wish-seen";
+    const WISH_SEEN_MAX = 80;
+    let wishSeenFallback = [];
+
+    function loadWishSeen() {
+        try {
+            const ids = JSON.parse(localStorage.getItem(WISH_SEEN_KEY) || "[]");
+            return Array.isArray(ids) ? ids.filter(Number.isInteger) : [];
+        } catch (e) {
+            return wishSeenFallback;
+        }
+    }
+
+    function saveWishSeen(ids) {
+        const recent = ids.slice(-WISH_SEEN_MAX);
+        wishSeenFallback = recent;
+        try { localStorage.setItem(WISH_SEEN_KEY, JSON.stringify(recent)); } catch (e) {}
     }
 
     function currentTab()   { return wishTabs[wishSkill]; }
