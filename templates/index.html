@@ -566,6 +566,7 @@
         }
 
         .wish-skill:hover { opacity: 0.85; background: rgba(255,255,255,0.2); }
+        .wish-skill .ws-count { display: block; font-size: 0.66rem; font-weight: 600; opacity: 0.85; margin-top: 1px; }
 
         .wish-skill .ws-icon { display: block; font-size: 1.2rem; margin-bottom: 2px; }
         .wish-skill.active { opacity: 1; background: rgba(255,255,255,0.28); transform: translateY(-2px); }
@@ -980,10 +981,10 @@
     <div class="card" id="wish-state">
         <div class="wish-top">
             <div class="wish-skills">
-                <button class="wish-skill" id="ws-listen" onclick="switchWishSkill('listen')"><span class="ws-icon">🎧</span>Escucha</button>
-                <button class="wish-skill" id="ws-read" onclick="switchWishSkill('read')"><span class="ws-icon">📖</span>Lee</button>
-                <button class="wish-skill" id="ws-write" onclick="switchWishSkill('write')"><span class="ws-icon">✍️</span>Escribe</button>
-                <button class="wish-skill" id="ws-speak" onclick="switchWishSkill('speak')"><span class="ws-icon">🗣️</span>Habla</button>
+                <button class="wish-skill" id="ws-listen" onclick="switchWishSkill('listen')"><span class="ws-icon">🎧</span>Escucha<span class="ws-count" id="wsc-listen"></span></button>
+                <button class="wish-skill" id="ws-read" onclick="switchWishSkill('read')"><span class="ws-icon">📖</span>Lee<span class="ws-count" id="wsc-read"></span></button>
+                <button class="wish-skill" id="ws-write" onclick="switchWishSkill('write')"><span class="ws-icon">✍️</span>Escribe<span class="ws-count" id="wsc-write"></span></button>
+                <button class="wish-skill" id="ws-speak" onclick="switchWishSkill('speak')"><span class="ws-icon">🗣️</span>Habla<span class="ws-count" id="wsc-speak"></span></button>
             </div>
             <div class="wish-meta">
                 <span id="wish-step-label">Paso 1 de 8</span>
@@ -1365,10 +1366,11 @@
     }
 
     // ── Wishes mode ──────────────────────────────────────────────────────────
-    // A round is WISH_STEPS steps cycling through four skills, each on a
-    // different wish sentence. Answers are checked in the browser.
+    // Each skill tab has its own WISH_PER_SKILL questions, all different
+    // sentences, and remembers its place when you switch tabs. Points and the
+    // streak are shared. Answers are checked in the browser.
 
-    const WISH_STEPS = 8;
+    const WISH_PER_SKILL = 5;
     const WISH_SKILLS = ["listen", "read", "write", "speak"];
     const WISH_SKILL_INFO = {
         listen: { icon: "🎧", name: "Escucha" },
@@ -1378,13 +1380,11 @@
     };
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    let wishItems = [];
-    let wishStep = 0;
+    let wishTabs = {};          // skill -> { items, idx, answered, right }
+    let wishSkill = "listen";   // tab currently shown
     let wishPoints = 0;
     let wishStreak = 0;
-    let wishAnswered = false;
-    let wishResults = {};
-    let wishSkills = [];  // skill for each step; the skill tabs can change it
+    let wishAnswered = false;   // whether the question on screen is answered
     let recognizer = null;
 
     const wishAudio = document.getElementById("wish-audio-player");
@@ -1433,65 +1433,98 @@
         setVerbChrome(false);
         setPhraseChrome(true);
         showOnly("loading-state");
+        let items;
         try {
-            const res = await fetch(`/api/wishes?n=${WISH_STEPS}`);
+            const res = await fetch(`/api/wishes?n=${WISH_PER_SKILL * WISH_SKILLS.length}`);
             if (!res.ok) throw new Error("fetch failed");
-            wishItems = await res.json();
+            items = await res.json();
         } catch (e) {
             showOnly("error-state");
             return;
         }
-        wishStep = 0;
+        // Deal the distinct sentences out so no two tabs share a question.
+        wishTabs = {};
+        WISH_SKILLS.forEach((s, i) => {
+            wishTabs[s] = {
+                items: items.slice(i * WISH_PER_SKILL, (i + 1) * WISH_PER_SKILL),
+                idx: 0,
+                answered: false,
+                right: 0,
+            };
+        });
+        wishSkill = WISH_SKILLS[0];
         wishPoints = 0;
         wishStreak = 0;
-        wishResults = { listen: [0, 0], read: [0, 0], write: [0, 0], speak: [0, 0] };
-        setWishSkillsFrom(0, WISH_SKILLS[0]);
         renderWishStep();
     }
 
-    function currentWish()  { return wishItems[wishStep]; }
-    function currentSkill() { return wishSkills[wishStep]; }
+    function currentTab()   { return wishTabs[wishSkill]; }
+    function currentWish()  { return currentTab().items[currentTab().idx]; }
+    function currentSkill() { return wishSkill; }
+    function tabDone(s)     { return wishTabs[s].idx >= wishTabs[s].items.length; }
 
-    // Steps from `step` onward cycle through the skills starting at `skill`.
-    function setWishSkillsFrom(step, skill) {
-        const start = WISH_SKILLS.indexOf(skill);
-        for (let i = step; i < WISH_STEPS; i++) {
-            wishSkills[i] = WISH_SKILLS[(start + i - step) % WISH_SKILLS.length];
-        }
-    }
-
-    // Skill tab: redo the current wish in that skill, or if it's already
-    // answered, move on to the next wish in that skill.
+    // Skill tab: show that tab's own questions, where you left off. A question
+    // already answered when you leave counts as done, so you come back to the next one.
     function switchWishSkill(skill) {
-        if (wishAnswered) {
-            if (wishStep + 1 >= WISH_STEPS) return;
-            wishStep++;
-        } else if (skill === currentSkill()) {
-            return;
+        if (skill === wishSkill) return;
+        const tab = currentTab();
+        if (tab.answered) {
+            tab.idx++;
+            tab.answered = false;
         }
-        setWishSkillsFrom(wishStep, skill);
+        wishSkill = skill;
         renderWishStep();
     }
 
     function updateWishHeader() {
-        WISH_SKILLS.forEach(s =>
-            document.getElementById(`ws-${s}`).classList.toggle("active", s === currentSkill()));
-        document.getElementById("wish-step-label").textContent = `Paso ${wishStep + 1} de ${WISH_STEPS}`;
+        const tab = currentTab();
+        WISH_SKILLS.forEach(s => {
+            const t = wishTabs[s];
+            const done = t.idx + (t.answered ? 1 : 0);
+            document.getElementById(`ws-${s}`).classList.toggle("active", s === wishSkill);
+            document.getElementById(`wsc-${s}`).textContent =
+                done >= t.items.length ? `✓ ${t.right}/${t.items.length}` : `${done}/${t.items.length}`;
+        });
+        document.getElementById("wish-step-label").textContent = tabDone(wishSkill)
+            ? `${WISH_SKILL_INFO[wishSkill].name} · done`
+            : `${WISH_SKILL_INFO[wishSkill].name} · ${tab.idx + 1} de ${tab.items.length}`;
         document.getElementById("wish-points").textContent = `⭐ ${wishPoints}`;
         document.getElementById("wish-streak").textContent = wishStreak >= 2 ? `🔥 ${wishStreak}` : "";
-        document.getElementById("wish-progress-fill").style.width = `${(wishStep / WISH_STEPS) * 100}%`;
+        const total = WISH_SKILLS.length * WISH_PER_SKILL;
+        const doneAll = WISH_SKILLS.reduce((n, s) => n + wishTabs[s].idx + (wishTabs[s].answered ? 1 : 0), 0);
+        document.getElementById("wish-progress-fill").style.width = `${(doneAll / total) * 100}%`;
+    }
+
+    // Shown when the current tab has no questions left.
+    function renderTabDone(body) {
+        const tab = currentTab();
+        const nextSkill = WISH_SKILLS.find(s => !tabDone(s));
+        body.innerHTML = `
+            <div class="wish-banner correct">✓ ${WISH_SKILL_INFO[wishSkill].icon}
+                ${WISH_SKILL_INFO[wishSkill].name} complete — ${tab.right} of ${tab.items.length} correct</div>
+            <div class="wish-row" style="margin: 18px 0 20px">
+                ${nextSkill
+                    ? `<button class="wish-btn" onclick="switchWishSkill('${nextSkill}')">
+                           Continue with ${WISH_SKILL_INFO[nextSkill].icon} ${WISH_SKILL_INFO[nextSkill].name} →</button>`
+                    : `<button class="wish-btn" onclick="showWishComplete()">See results →</button>`}
+            </div>`;
     }
 
     function renderWishStep() {
         stopWishActivity();
-        wishAnswered = false;
-        const item = currentWish();
-        const skill = currentSkill();
         const body = document.getElementById("wish-body");
         document.getElementById("wish-feedback").style.display = "none";
         document.getElementById("wish-next-btn").style.display = "none";
+        currentTab().answered = false;
+        wishAnswered = false;
         updateWishHeader();
         showOnly("wish-state");
+        if (tabDone(wishSkill)) {
+            renderTabDone(body);
+            return;
+        }
+        const item = currentWish();
+        const skill = currentSkill();
 
         const options = shuffle(item.options).map(o =>
             `<button class="wish-opt" onclick="chooseWishOption(this, '${esc(o)}')">${esc(o)}</button>`
@@ -1724,11 +1757,11 @@
 
     function finishWishStep(correct, title) {
         wishAnswered = true;
+        currentTab().answered = true;
         const item = currentWish();
         const skill = currentSkill();
-        wishResults[skill][1]++;
         if (correct) {
-            wishResults[skill][0]++;
+            currentTab().right++;
             wishStreak++;
             const gained = 10 + (wishStreak >= 3 ? 5 : 0);
             wishPoints += gained;
@@ -1754,7 +1787,7 @@
         }
 
         const next = document.getElementById("wish-next-btn");
-        next.textContent = wishStep + 1 >= WISH_STEPS ? "See results" : "Siguiente →";
+        next.textContent = currentTab().idx + 1 >= currentTab().items.length ? "Finish this tab →" : "Siguiente →";
         next.style.display = "block";
     }
 
@@ -1775,15 +1808,18 @@
     }
 
     function nextWishStep() {
-        wishStep++;
-        if (wishStep >= WISH_STEPS) showWishComplete();
+        const tab = currentTab();
+        tab.idx++;
+        tab.answered = false;
+        if (WISH_SKILLS.every(tabDone)) showWishComplete();
         else renderWishStep();
     }
 
     function showWishComplete() {
         stopWishActivity();
-        const right = WISH_SKILLS.reduce((n, s) => n + wishResults[s][0], 0);
-        const pct = right / WISH_STEPS;
+        const total = WISH_SKILLS.length * WISH_PER_SKILL;
+        const right = WISH_SKILLS.reduce((n, s) => n + wishTabs[s].right, 0);
+        const pct = right / total;
         let emoji, label;
         if (pct === 1)       { emoji = "🌠"; label = "Every wish came true — ¡Increíble!"; }
         else if (pct >= 0.75) { emoji = "🌟"; label = "¡Muy bien! Your wishes are in great shape."; }
@@ -1792,11 +1828,11 @@
 
         document.getElementById("wish-result-emoji").textContent = emoji;
         document.getElementById("wish-final-points").textContent = `⭐ ${wishPoints}`;
-        document.getElementById("wish-final-label").textContent = `${right} of ${WISH_STEPS} correct · ${label}`;
+        document.getElementById("wish-final-label").textContent = `${right} of ${total} correct · ${label}`;
         document.getElementById("wish-skill-results").innerHTML = WISH_SKILLS.map(s => `
             <div class="skill-result">
                 <span class="sr-icon">${WISH_SKILL_INFO[s].icon}</span>
-                <span class="sr-score">${wishResults[s][0]}/${wishResults[s][1]}</span>
+                <span class="sr-score">${wishTabs[s].right}/${wishTabs[s].items.length}</span>
                 ${WISH_SKILL_INFO[s].name}
             </div>`).join("");
         showOnly("wish-complete-state");
