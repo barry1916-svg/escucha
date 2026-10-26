@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from sentences import SENTENCES, TENSES, CANDIDATE_TENSES
 from phrases import PHRASES
 from wishes import WISHES
+from fill_blanks import FILL_SENTENCES, FILL_TENSES
 
 app = Flask(__name__)
 
@@ -168,6 +169,40 @@ def wish_audio(wish_id):
     if cache_key not in _audio_cache:
         try:
             _audio_cache[cache_key] = asyncio.run(_tts_bytes(w["es"]))
+        except Exception as exc:
+            return f"TTS error: {exc}", 503
+    resp = send_file(
+        io.BytesIO(_audio_cache[cache_key]),
+        mimetype="audio/mpeg",
+        as_attachment=False,
+    )
+    resp.headers["Cache-Control"] = "public, max-age=86400"
+    return resp
+
+
+@app.route("/api/fill")
+def fill():
+    # One sentence per tense, preferring ones not in `exclude` (recently seen).
+    exclude_param = request.args.get("exclude", "")
+    exclude_ids = {int(x) for x in exclude_param.split(",") if x.strip().isdigit()}
+    chosen = []
+    for tense in FILL_TENSES:
+        pool = [s for s in FILL_SENTENCES if s["tense"] == tense]
+        fresh = [s for s in pool if s["id"] not in exclude_ids]
+        chosen.append(random.choice(fresh or pool))
+    random.shuffle(chosen)
+    return jsonify(chosen)
+
+
+@app.route("/api/audio/fill/<int:fill_id>")
+def fill_audio(fill_id):
+    s = next((x for x in FILL_SENTENCES if x["id"] == fill_id), None)
+    if not s:
+        return "Not found", 404
+    cache_key = f"fill_{fill_id}"
+    if cache_key not in _audio_cache:
+        try:
+            _audio_cache[cache_key] = asyncio.run(_tts_bytes(s["es"]))
         except Exception as exc:
             return f"TTS error: {exc}", 503
     resp = send_file(

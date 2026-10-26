@@ -850,6 +850,143 @@
         .skill-result .sr-icon { display: block; font-size: 1.4rem; margin-bottom: 4px; }
         .skill-result .sr-score { display: block; font-size: 1rem; color: #222; }
 
+        /* ── Verb sub-menu & fill in the blanks ── */
+        #verb-menu-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 16px 48px;
+            width: 100%;
+        }
+
+        #fill-state, #fill-complete-state { display: none; }
+
+        .fill-top {
+            background: linear-gradient(135deg, #C60B1E 0%, #9b0918 100%);
+            color: white;
+            padding: 16px 20px;
+        }
+
+        .fill-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .fill-progress {
+            height: 6px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        #fill-progress-fill { height: 100%; width: 0%; background: #ffd166; transition: width 0.4s ease; }
+
+        .fill-body { padding: 20px 24px 8px; }
+
+        .fill-tense {
+            display: inline-block;
+            background: #fce8ea;
+            color: #C60B1E;
+            font-size: 0.78rem;
+            font-weight: 800;
+            border-radius: 999px;
+            padding: 4px 12px;
+            margin-bottom: 12px;
+        }
+
+        .fill-sentence {
+            font-size: 1.2rem;
+            line-height: 1.55;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 4px;
+        }
+
+        .fill-sentence .blank {
+            display: inline-block;
+            min-width: 80px;
+            border-bottom: 3px dashed #C60B1E;
+            color: #C60B1E;
+            text-align: center;
+        }
+
+        .fill-sentence strong { color: #C60B1E; font-weight: 800; }
+        .fill-hint { font-size: 0.88rem; font-weight: 700; color: #C60B1E; margin-bottom: 4px; }
+        .fill-en { font-size: 0.85rem; color: #888; font-style: italic; margin-bottom: 16px; }
+
+        .fill-write-row { display: flex; gap: 8px; margin-bottom: 10px; }
+
+        #fill-input {
+            flex: 1;
+            min-width: 0;
+            font-size: 1.05rem;
+            padding: 12px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            outline: none;
+        }
+
+        #fill-input:focus { border-color: #C60B1E; }
+        #fill-input.correct { border-color: #16a34a; background: #f0fdf4; }
+        #fill-input.wrong   { border-color: #dc2626; background: #fef2f2; }
+
+        .fill-btn {
+            background: #C60B1E;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .fill-btn:disabled { opacity: 0.4; cursor: default; }
+        .fill-btn.secondary { background: #fce8ea; color: #C60B1E; }
+        #fill-state .accent-key { background: #fce8ea; color: #C60B1E; }
+
+        #fill-feedback { display: none; margin-top: 4px; }
+
+        #fill-next-btn {
+            display: none;
+            width: calc(100% - 48px);
+            margin: 4px 24px 24px;
+            padding: 14px;
+            background: #C60B1E;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        #fill-complete-state { text-align: center; padding: 40px 24px; }
+        #fill-complete-state .result-emoji { font-size: 4rem; margin-bottom: 12px; }
+        #fill-complete-state h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+        #fill-final-score { font-size: 2.6rem; font-weight: 800; color: #C60B1E; margin: 10px 0 4px; }
+        #fill-final-label { color: #888; margin-bottom: 20px; }
+        #fill-again-btn { padding: 16px 48px; font-size: 1rem; border-radius: 14px; margin-top: 8px; }
+
+        #fill-review { text-align: left; margin-bottom: 16px; }
+        #fill-review h3 { font-size: 0.9rem; color: #555; margin-bottom: 8px; }
+
+        .review-item {
+            background: #F7F3EE;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+
+        .review-item strong { color: #15803d; }
+        .review-item .yours { color: #b91c1c; text-decoration: line-through; }
+        .review-item .tense { display: block; font-size: 0.75rem; color: #888; font-weight: 700; }
+
         /* ── Error ── */
         #error-state {
             display: none;
@@ -899,10 +1036,10 @@
             <p>Choose an exercise to get started</p>
         </div>
         <div class="mode-buttons">
-            <button class="mode-btn" onclick="startVerbMode()">
+            <button class="mode-btn" onclick="showVerbMenu()">
                 <div class="mode-icon">🎧</div>
                 <div class="mode-title">Verb Practice</div>
-                <div class="mode-desc">Listen and identify Spanish verb tenses</div>
+                <div class="mode-desc">Listen for tenses, or write the right form</div>
             </button>
             <button class="mode-btn" onclick="startPhraseMode()">
                 <div class="mode-icon">💬</div>
@@ -915,6 +1052,69 @@
                 <div class="mode-desc">Make wishes with the subjunctive — listen, read, write &amp; speak</div>
             </button>
         </div>
+    </div>
+
+    <!-- Verb: sub-menu -->
+    <div id="verb-menu-state">
+        <div class="home-intro">
+            <h2>Verb Practice</h2>
+            <p>Choose how you'd like to practise</p>
+        </div>
+        <div class="mode-buttons">
+            <button class="mode-btn" onclick="startVerbMode()">
+                <div class="mode-icon">🎧</div>
+                <div class="mode-title">Listen &amp; Identify</div>
+                <div class="mode-desc">Hear a sentence and pick the verb's tense</div>
+            </button>
+            <button class="mode-btn" onclick="startFillMode()">
+                <div class="mode-icon">✍️</div>
+                <div class="mode-title">Fill in the Blanks</div>
+                <div class="mode-desc">Write the right form — one question per tense, 10 tenses</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Verb: fill in the blanks -->
+    <div class="card" id="fill-state">
+        <div class="fill-top">
+            <div class="fill-meta">
+                <span id="fill-counter">Pregunta 1 de 10</span>
+                <span id="fill-score">0 correct</span>
+            </div>
+            <div class="fill-progress"><div id="fill-progress-fill"></div></div>
+        </div>
+        <div class="fill-body">
+            <span class="fill-tense" id="fill-tense"></span>
+            <p class="fill-sentence" id="fill-sentence"></p>
+            <p class="fill-hint" id="fill-hint"></p>
+            <p class="fill-en" id="fill-en"></p>
+            <div class="fill-write-row">
+                <input id="fill-input" type="text" autocomplete="off" autocapitalize="off"
+                       spellcheck="false" placeholder="Type the verb…"
+                       onkeydown="if (event.key === 'Enter') checkFill()">
+                <button class="fill-btn" id="fill-check-btn" onclick="checkFill()">Check</button>
+            </div>
+            <div class="accent-keys">
+                <button class="accent-key" onclick="insertAccent('á', 'fill-input')">á</button>
+                <button class="accent-key" onclick="insertAccent('é', 'fill-input')">é</button>
+                <button class="accent-key" onclick="insertAccent('í', 'fill-input')">í</button>
+                <button class="accent-key" onclick="insertAccent('ó', 'fill-input')">ó</button>
+                <button class="accent-key" onclick="insertAccent('ú', 'fill-input')">ú</button>
+                <button class="accent-key" onclick="insertAccent('ñ', 'fill-input')">ñ</button>
+            </div>
+            <div id="fill-feedback"></div>
+        </div>
+        <button id="fill-next-btn" onclick="nextFill()">Next →</button>
+    </div>
+
+    <!-- Verb: fill in the blanks — results -->
+    <div class="card" id="fill-complete-state">
+        <div class="result-emoji" id="fill-result-emoji"></div>
+        <h2>Test complete!</h2>
+        <div id="fill-final-score"></div>
+        <div id="fill-final-label"></div>
+        <div id="fill-review"></div>
+        <button class="fill-btn" id="fill-again-btn" onclick="startFillMode()">New test</button>
     </div>
 
     <!-- Verb: Question -->
@@ -1077,14 +1277,15 @@
 
     const ALL_SCREENS = ["loading-state", "error-state", "home-state",
                          "question-state", "feedback-state", "complete-state", "phrase-state",
-                         "wish-state", "wish-complete-state"];
+                         "wish-state", "wish-complete-state",
+                         "verb-menu-state", "fill-state", "fill-complete-state"];
 
     function showOnly(...ids) {
         ALL_SCREENS.forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
             if (ids.includes(id)) {
-                if (id === "home-state") el.style.display = "flex";
+                if (id === "home-state" || id === "verb-menu-state") el.style.display = "flex";
                 else if (id === "loading-state") el.style.display = "flex";
                 else el.style.display = "block";
             } else {
@@ -1106,6 +1307,7 @@
     function goHome() {
         mode = "home";
         stopWishActivity();
+        fillAudio.pause();
         setVerbChrome(false);
         document.getElementById("header-subtitle").textContent = "Spanish Listening Practice";
         showOnly("home-state");
@@ -1651,8 +1853,8 @@
         finishWishStep(correct, correct ? "¡Muy bien!" : `Not quite — it's “${item.answer}”`);
     }
 
-    function insertAccent(c) {
-        const input = document.getElementById("wish-input");
+    function insertAccent(c, inputId = "wish-input") {
+        const input = document.getElementById(inputId);
         const start = input.selectionStart ?? input.value.length;
         const end = input.selectionEnd ?? input.value.length;
         input.value = input.value.slice(0, start) + c + input.value.slice(end);
@@ -1858,6 +2060,176 @@
                 ${WISH_SKILL_INFO[s].name}
             </div>`).join("");
         showOnly("wish-complete-state");
+    }
+
+    // ── Verb sub-menu & fill in the blanks ───────────────────────────────────
+    // A test is one sentence per tense from the server; answers are checked
+    // here. Recently seen sentences are sent back so the next test differs.
+
+    const FILL_SEEN_KEY = "escucha-fill-seen";
+    const FILL_SEEN_MAX = 200;
+    let fillSeenFallback = [];
+    let fillItems = [];
+    let fillIdx = 0;
+    let fillScore = 0;
+    let fillAnswered = false;
+    let fillMistakes = [];
+    const fillAudio = new Audio();
+
+    function showVerbMenu() {
+        mode = "verb-menu";
+        fillAudio.pause();
+        document.getElementById("header-subtitle").textContent = "Verb Practice";
+        setVerbChrome(false);
+        setPhraseChrome(true);
+        showOnly("verb-menu-state");
+    }
+
+    function loadFillSeen() {
+        try {
+            const ids = JSON.parse(localStorage.getItem(FILL_SEEN_KEY) || "[]");
+            return Array.isArray(ids) ? ids.filter(Number.isInteger) : [];
+        } catch (e) {
+            return fillSeenFallback;
+        }
+    }
+
+    function saveFillSeen(ids) {
+        const recent = ids.slice(-FILL_SEEN_MAX);
+        fillSeenFallback = recent;
+        try { localStorage.setItem(FILL_SEEN_KEY, JSON.stringify(recent)); } catch (e) {}
+    }
+
+    async function startFillMode() {
+        mode = "fill";
+        document.getElementById("header-subtitle").textContent = "Fill in the Blanks";
+        setVerbChrome(false);
+        setPhraseChrome(true);
+        showOnly("loading-state");
+        try {
+            const seen = loadFillSeen();
+            const res = await fetch(`/api/fill?exclude=${seen.join(",")}`);
+            if (!res.ok) throw new Error("fetch failed");
+            fillItems = await res.json();
+            saveFillSeen([...seen, ...fillItems.map(i => i.id)]);
+        } catch (e) {
+            showOnly("error-state");
+            return;
+        }
+        fillIdx = 0;
+        fillScore = 0;
+        fillMistakes = [];
+        renderFill();
+    }
+
+    function currentFill() { return fillItems[fillIdx]; }
+
+    function renderFill() {
+        const item = currentFill();
+        fillAnswered = false;
+        fillAudio.pause();
+        document.getElementById("fill-counter").textContent = `Pregunta ${fillIdx + 1} de ${fillItems.length}`;
+        document.getElementById("fill-score").textContent = `${fillScore} correct`;
+        document.getElementById("fill-progress-fill").style.width = `${(fillIdx / fillItems.length) * 100}%`;
+        document.getElementById("fill-tense").textContent = item.tense;
+        document.getElementById("fill-sentence").innerHTML = esc(item.es).replace(answerRegex(item.answer),
+            (_, pre) => `${pre}<span class="blank">&nbsp;?&nbsp;</span>`);
+        document.getElementById("fill-hint").textContent = `(${item.infinitive} · ${item.subject})`;
+        document.getElementById("fill-en").textContent = item.en;
+        const input = document.getElementById("fill-input");
+        input.value = "";
+        input.disabled = false;
+        input.className = "";
+        document.getElementById("fill-check-btn").disabled = false;
+        document.getElementById("fill-feedback").style.display = "none";
+        document.getElementById("fill-next-btn").style.display = "none";
+        showOnly("fill-state");
+        input.focus();
+    }
+
+    // Forms accepted as fully correct: the answer itself, plus the -se
+    // variant for the imperfect subjunctive (tuviera / tuviese).
+    function fillAccepted(item) {
+        const answer = item.answer.toLowerCase();
+        const forms = [answer];
+        if (item.tense === "Imperfecto de subjuntivo") {
+            forms.push(answer.replace(/ra(s|mos|is|n)?$/, "se$1"));
+        }
+        return forms;
+    }
+
+    function checkFill() {
+        if (fillAnswered) return;
+        const item = currentFill();
+        const input = document.getElementById("fill-input");
+        const typed = input.value.trim().toLowerCase().replace(/\s+/g, " ");
+        if (!typed) return;
+        const forms = fillAccepted(item);
+        let correct = false, title;
+        if (forms.includes(typed)) {
+            correct = true;
+            title = "✓ ¡Correcto!";
+        } else if (forms.some(f => stripAccents(f) === stripAccents(typed))) {
+            correct = true;
+            title = `✓ Right form — watch the accent: “${item.answer}”`;
+        } else {
+            title = `✗ The answer is “${item.answer}”`;
+            fillMistakes.push({ item, typed });
+        }
+        fillAnswered = true;
+        if (correct) fillScore++;
+        input.disabled = true;
+        input.classList.add(correct ? "correct" : "wrong");
+        document.getElementById("fill-check-btn").disabled = true;
+        document.getElementById("fill-score").textContent = `${fillScore} correct`;
+        document.getElementById("fill-sentence").innerHTML = esc(item.es).replace(answerRegex(item.answer),
+            (_, pre, word) => `${pre}<strong>${word}</strong>`);
+
+        const fb = document.getElementById("fill-feedback");
+        fb.innerHTML = `
+            <div class="wish-banner ${correct ? "correct" : "wrong"}">${esc(title)}</div>
+            <p class="wish-why">“${esc(item.answer)}” is the ${esc(item.tense.toLowerCase())}
+                of <em>${esc(item.infinitive)}</em> (${esc(item.subject)}).</p>
+            <div class="wish-row"><button class="fill-btn secondary" onclick="playFill()">🔊 Listen</button></div>`;
+        fb.style.display = "block";
+
+        const next = document.getElementById("fill-next-btn");
+        next.textContent = fillIdx + 1 >= fillItems.length ? "See results" : "Next →";
+        next.style.display = "block";
+    }
+
+    function playFill() {
+        fillAudio.src = `/api/audio/fill/${currentFill().id}`;
+        fillAudio.play().catch(() => {});
+    }
+
+    function nextFill() {
+        fillIdx++;
+        if (fillIdx >= fillItems.length) showFillComplete();
+        else renderFill();
+    }
+
+    function showFillComplete() {
+        fillAudio.pause();
+        const total = fillItems.length;
+        const pct = fillScore / total;
+        let emoji, label;
+        if (pct === 1)        { emoji = "🏆"; label = "Perfect — ¡Impresionante!"; }
+        else if (pct >= 0.8)  { emoji = "🌟"; label = "Excellent — ¡Muy bien!"; }
+        else if (pct >= 0.6)  { emoji = "👍"; label = "Good effort — ¡Bien hecho!"; }
+        else if (pct >= 0.4)  { emoji = "📚"; label = "Keep practising — ¡Sigue así!"; }
+        else                  { emoji = "💪"; label = "Don't give up — ¡Tú puedes!"; }
+        document.getElementById("fill-result-emoji").textContent = emoji;
+        document.getElementById("fill-final-score").textContent = `${fillScore} / ${total}`;
+        document.getElementById("fill-final-label").textContent = label;
+        document.getElementById("fill-review").innerHTML = fillMistakes.length === 0 ? "" :
+            `<h3>Review your mistakes</h3>` + fillMistakes.map(({ item, typed }) => `
+                <div class="review-item">
+                    <span class="tense">${esc(item.tense)} · ${esc(item.infinitive)} (${esc(item.subject)})</span>
+                    ${esc(item.es).replace(answerRegex(item.answer), (_, pre, w) => `${pre}<strong>${w}</strong>`)}
+                    — you wrote <span class="yours">${esc(typed)}</span>
+                </div>`).join("");
+        showOnly("fill-complete-state");
     }
 
     // ── Boot ─────────────────────────────────────────────────────────────────
